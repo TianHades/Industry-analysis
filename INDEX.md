@@ -5,7 +5,7 @@ main_idea: |
   用产业生命周期框架为锚，结合金字塔原理/SCQR/假设驱动法等研究元能力，
   将行业分析拆解为可行性、规模性、防守性、盈利性四个基本面维度，
   叠加估值映射、外部驱动力扫描和景气度追踪，输出身份导向的行业分析报告。
-total_skills: 13
+total_skills: 14
 generated_at: 2026-06-10
 ---
 
@@ -182,19 +182,20 @@ graph LR
 
 | 阶段 | 日期 | 内容 | 状态 |
 |------|------|------|------|
-| 模块化解耦 | 2026-06-10 | 将 ~1200行 SKILL.md 拆解为 13 个独立子技能 + 4 个参考文件 | ✅ 完成 |
+| 模块化解耦 | 2026-06-10 | 将 ~1200行 SKILL.md 拆解为 14 个独立子技能 + 4 个参考文件 | ✅ 完成 |
 | 结构标准化 | 2026-06-10 | 每个子技能完成 RI-A1-A2-E-B 六段结构 | ✅ 完成 |
-| 关系建模 | 2026-06-10 | 识别 18 条技能间关系（9 depends-on + 7 composes-with + 2 contrasts-with） | ✅ 完成 |
+| 关系建模 | 2026-06-10 | 识别 18 条技能间关系（9 depends-on + 6 composes-with + 3 contrasts-with） | ✅ 完成 |
 | 批判整合 | 2026-06-10 | 基于 BOOK_OVERVIEW.md 的系统批判注入每个子技能的 B 字段 | ✅ 完成 |
+| StockReview 桥接 | 2026-06-14~16 | 初版 historical-case-matching 桥接 skill → 发现与 StockReview 原生 historical-stage-benchmarking 方法论重复 → 降级为 reference 交接文档（见 reference/如何接入StockReview做历史对照.md） | ✅ 完成 |
 
 ### 关系统计
 
 | 关系类型 | 数量 | 说明 |
 |----------|------|------|
 | depends-on | 9 | 核心锚被8个技能依赖 + identity依赖hypothesis |
-| composes-with | 7 | 工具技能被组合使用 |
-| contrasts-with | 2 | 代表不同分析路径 |
-| **合计** | **18** | 
+| composes-with | 6 | 工具技能被组合使用 |
+| contrasts-with | 3 | 代表不同分析路径 |
+| **合计** | **18** | |
 
 ---
 

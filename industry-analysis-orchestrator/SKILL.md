@@ -9,7 +9,7 @@ description: |
 source_book: 《如何快速了解一个行业》 肖璟
 source_chapter: 全书（第1-13章整合）
 tags: [industry-analysis, investment, orchestration, report-generation]
-version: 2.0.0
+version: 2.2.0
 related_skills:
   - depends-on: [identity-oriented-output, industry-lifecycle-anchoring, hypothesis-driven-research]
   - composes-with: [industry-definition, spatial-temporal-benchmarking, business-model-feasibility, market-size-estimation, moat-analysis, competitive-landscape-analysis, capacity-cycle-judgment, lifecycle-valuation-map, external-force-scanner, prosperity-tracking-system]
@@ -172,6 +172,8 @@ related_skills:
    - 设定"验证/证伪"条件清单
    - 完成标准: 追踪方案表 + 验证条件清单
 
+> 🔗 **历史对照（在 StockReview 工程完成）**：本工程职责到产出含完整基本面数据的报告为止。"像→不像→像"历史对照由 StockReview 原生技能 `historical-stage-benchmarking` 承载。报告产出后，按 `reference/如何接入StockReview做历史对照.md` 的 14 维特征向量映射表交接契约，切到 StockReview 执行。
+
 ### 第四阶段：综合报告输出（5-10分钟）
 
 **10. 质量自检**
@@ -280,7 +282,7 @@ related_skills:
 
 ```
 ┌──────────────────────────────────────────────────────────┐
-│           行业分析总成 — 关键检查清单 v2.0.1               │
+│           行业分析总成 — 关键检查清单 v2.1.0               │
 ├──────────────────────────────────────────────────────────┤
 │ □ 身份确认（投资者/创业者/求职者/学生/路人？）              │
 │ □ 行业定义与边界（分类？子赛道？产业链？）                  │
@@ -350,6 +352,22 @@ related_skills:
 ---
 
 ## 📋 更新日志
+
+### v2.2.0 (2026-06-16) — StockReview 桥接降级为交接文档
+
+- 🔴 **移除 Phase 3.5 自动调用**：`historical-case-matching` 桥接 skill 与 StockReview 原生 `historical-stage-benchmarking` 方法论高度重复（三段校准/五维度/三因子几乎逐字相同），且硬编码 StockReview 绝对路径易失效。实际工作流是"本工程产出报告 → 手动切到 StockReview 做对照"，故将 skill 降级为 `reference/如何接入StockReview做历史对照.md` 交接文档（保留 14 维特征向量映射表这一唯一增量），对照方法论归还 StockReview 原生技能
+- 🔴 **模板回归**：分析模块 `### 1-11` 改回 `### 1-10`（历史对标不在本工程报告内输出）
+- 🟡 **Step 9 后**新增指向交接文档的说明
+- 🟡 **快速参考卡片**：移除"历史对标"检查项
+- 🟡 **子技能计数**：14 → 13
+
+### v2.1.0 (2026-06-14) — StockReview 历史对标集成
+
+- 🔴 **Phase 3.5 历史对标分析**：新增 `historical-case-matching` 桥接技能调用步骤，投资者版推荐执行。将当前行业与 StockReview 案例档案库（22个行业、2003-2020年A股全景复盘）进行"像→不像→像"三段历史对标，输出情景推演和投资启示
+- 🔴 **模板概览更新**：分析模块从 `### 1-10` 扩展为 `### 1-11`（含历史对标）
+- 🟡 **快速参考卡片**：新增"历史对标"检查项
+- 🟡 **子技能计数**：从 13 个更新为 14 个
+- 🟡 **composes-with**：新增 `historical-case-matching` 到编排列表
 
 ### v2.0.1 (2026-06-10) — 产能周期与经济周期方法论补充
 

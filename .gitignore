@@ -1,0 +1,40 @@
+# ============================================================
+# Industry-analysis 行业分析技能库 — .gitignore
+# ------------------------------------------------------------
+# skill 运行时会通过网络搜索 / 网页抓取产生大量一次性临时产物
+# 这些产物含本机绝对路径、易变、无保留价值，不应进入版本库
+# 下方规则覆盖已观察到的临时文件命名模式
+#
+# 默认保留：工程配置 .claude/settings.json、产出目录 output/
+# ============================================================
+
+# ---- 搜索引擎结果缓存（百度 / Google）----
+baidu_*.json
+baidu_*.txt
+google_*.json
+google_*.txt
+
+# ---- 网页抓取 / 文本提取产物 ----
+page-text.txt
+page_*.txt
+
+# ---- .claude/ 下的一次性脚本与抓取产物（保留 settings.json 等配置）----
+.claude/cer_*
+.claude/temp_*
+.claude/extract_*.py
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# ---- 系统 / 编辑器 ----
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
