@@ -91,37 +91,35 @@ related_skills:
    - 完成标准: 明确的估值方法选择 + 选择依据（基于生命周期阶段）
 
 2. **收集估值数据**
-   - 优先 AkShare 获取 PE/PB/股息率等结构化数据
-   - 备用：东方财富/雪球 WebFetch
-   - 搜索执行参考: `reference/search-specs.md`
+   - **完整方法见 `reference/search-specs.md`「AkShare 本环境使用须知」**（本节为速查）
    - 数据标注参考: `reference/data-annotation-standards.md`
    - 完成标准: 主要上市公司的当前PE/PB + 行业均值 + 历史分位数（如有）
 
-   **🔴 数据获取实操指引**：
+   **🔴 数据获取实操指引（本环境：Windows + Clash TUN 全局代理）**：
 
-   **方案一：AkShare（优先）**
+   ⚠️ **两个命门**（缺一不可，否则 AkShare 必失败）：① 须 `os.environ['NO_PROXY']='*'` 绕过 Windows 注册表系统代理；② **避开东财 push2 源**（`stock_zh_a_spot_em`/`stock_individual_info_em`/`stock_zh_a_hist` 等在 TUN 下不通），改用新浪/百度源。
+
+   **方案一：AkShare（优先，可批量）**
    - 安装：`pip install akshare -q`
-   - 核心思路：调用 AkShare 的个股估值指标接口，获取 PE/PB/股息率/总市值
-   - 注意：AkShare API 更新频繁，优先使用其官方文档中的最新函数名；以下为思路示意：
-     ```bash
-     # 思路：获取个股关键估值指标，一次调用拿 PE/PB/股息率/市值
-     python -c "import akshare as ak; print(ak.stock_individual_info_em(symbol='600900'))"
-     ```
-   - 提取字段：PE(TTM)、PB、总市值、股息率（如有）
+   ```python
+   import os
+   os.environ['NO_PROXY']='*'          # ← 命门①
+   import akshare as ak
+   # 行情（新浪源）：df = ak.stock_zh_a_spot()  # 代码格式 sh600900，筛选用 df[df['名称']=='长江电力']
+   # 估值（百度源）：ak.stock_zh_valuation_baidu(symbol="600900", indicator="市盈率", period="近一年")
+   #   indicator 可选：市盈率 / 市净率 / 总市值 / 股息率
+   ```
+   - 规律：数据源是新浪/百度/腾讯 → 可用；东财 push2 → 不可用
 
-   **方案二：东方财富 API（AkShare 失败时备用）**
-   - 东方财富行情 API 为公开 HTTP 接口，WebFetch 即可抓取
-   - 思路：构造 URL 请求获取 JSON 格式的实时行情数据，含 PE/PB/市值
-   - 也可直接 WebFetch 东方财富个股页（如 `https://emweb.securities.eastmoney.com/pc_hsf10/pages/index.html?type=web&code=600900`）
-
-   **方案三：雪球个股页（兜底方案）**
-   - `WebFetch("https://xueqiu.com/S/SH600900")` 可获取 PE/PB/市值等核心数据
+   **方案二：Chrome navigate 雪球个股页（单只取完整估值，或 AkShare 失败时备用）**
+   - `browse(open, url="https://xueqiu.com/S/SH{code}", wait=networkidle)` → `extract(type="text")` 或 `evaluate` 提取含"市盈率/市净率/总市值/股息率"行
+   - 雪球 SSR 完整估值表（PE-TTM/PB/市值/股息率），当日实时。**不用 WebFetch**（多数运行时不存在）、**不抓东财 push2**（TUN 下不通）
 
    **投资者版数据质量规则**：
    - 估值数据必须为**具体数值**（如"PE 24.9x"），不得使用区间（如"PE 15-25x"）
-   - 每行数据标注获取来源（AkShare/东方财富/雪球）和获取日期
+   - 每行数据标注获取来源（AkShare 新浪/百度源 / 雪球）和获取日期
    - 至少覆盖5家核心标的
-   - 如全部三种方案均失败 → 在估值章节用 🔴 显著标注"以下区间为 AI 估算，未获取实时数据"
+   - 如 AkShare 与 Chrome 均失败 → 在估值章节用 🔴 显著标注"以下区间为 AI 估算，未获取实时数据"
 
    **其他版本（学生/求职者/创业者）**：至少覆盖3家核心标的，允许使用行业公开数据的合理区间，但需标注数据来源和时效性。
 
