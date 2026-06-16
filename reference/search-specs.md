@@ -14,12 +14,12 @@
 |------|------|------|------|
 | ① 搜索 | Chrome + Google/Baidu | 发现信息源 | `browse(action="open")` 打开搜索引擎 |
 | ② 提取 | Chrome `extract(type="text")` | 从搜索结果页获取链接和摘要 | 快速扫描，筛选高价值页面 |
-| ③ 深度阅读 | **WebFetch**（内置工具） | 抓取具体文章/报告页面为 Markdown | 简单高效，无需浏览器渲染，速度快 |
+| ③ 深度阅读 | Chrome `extract(type="text"/"html")` | 抓取具体文章/报告页面正文 | `browse(open, wait=networkidle)` 后 `extract`，JS 渲染后取正文 |
 
-**为什么第③步用 WebFetch 而非 Chrome？**
-- WebFetch 直接请求 URL，返回纯文本 Markdown → 加载快、解析准、Token 省
-- Chrome 适合交互（搜索、翻页、填表），不适合逐篇抓取链接内容
-- 遇到 WebFetch 无法访问的页面（需 JS 渲染/登录），再回退到 Chrome `extract`
+**网页抓取统一用 Chrome（不依赖 WebFetch / webReader）**
+- 本工程**不用 WebFetch / webReader** 抓取网页：WebFetch 在多数 agent 运行时不存在；`webReader` 是个别模型平台（如智谱 Z.ai）的**专有内置工具，换模型基座即失效，不可移植**。
+- **统一用 Chrome**：`browse(open)` 导航 → `extract(type="text"` 取纯文本 / `type="html"` 取结构化`)` → 需读 JS 渲染数据时用 `evaluate`。Chrome 是真浏览器，JS 渲染、登录态、反爬页都能处理，且为用户级跨平台配置，**换模型不丢失**。
+- 逐篇抓链接内容：循环 `open + extract`（每篇两步），比单步工具略重但可移植、可靠。
 
 **搜索时效控制**：Google 搜索使用 `tbs=qdr:w`（近一周）或 `tbs=qdr:m`（近一月）过滤时效。
 
@@ -59,12 +59,57 @@
 | 平台 | 数据类型 | 接入方式 | 适用场景 |
 |------|---------|----------|----------|
 | **AkShare**（推荐） | A股/港股/宏观/行业全品类 | Bash: `python -c "import akshare as ak; ..."` | 财报、估值、行情、宏观指标 |
-| **东方财富/雪球** | A股实时行情、估值、分红 | WebFetch 直接抓取 | PE/PB/股息率、机构研报 |
-| **国家统计局官网** | 宏观数据、行业统计 | WebFetch 直接抓取 | 行业产值、用电量、人口 |
-| **各部委/行业协会官网** | 细分行业统计数据 | WebFetch 直接抓取 | 中电联电力数据、中汽协汽车产销 |
+| **东方财富/雪球** | A股实时行情、估值、分红 | Chrome navigate+extract | PE/PB/股息率、机构研报 |
+| **国家统计局官网** | 宏观数据、行业统计 | Chrome navigate+extract | 行业产值、用电量、人口 |
+| **各部委/行业协会官网** | 细分行业统计数据 | Chrome navigate+extract | 中电联电力数据、中汽协汽车产销 |
 | **Wind/Bloomberg** | 专业金融终端 | ❌ 无公开 API，需人工访问 | 深度估值、机构一致预期 |
 
 > **AkShare 优先**：当需要财务数据、估值指标、行业统计数据时，首选 AkShare 一行命令取数，比从网页抓取更快更准。如未安装：`pip install akshare -q`
+
+---
+
+### ⚠️ AkShare 本环境使用须知（必读，2026-06-16 实测）
+
+> 本工作环境为 **Windows + Clash 全局代理（TUN + fake-ip 模式）**。AkShare **默认配置在此环境会失败**，必须按下述两点处理，否则反复踩坑（报 ProxyError / ConnectionError / RemoteDisconnected）。
+
+**命门 ①：必须设 `NO_PROXY='*'` 绕过系统代理**
+
+Python 的 requests 在 Windows 上会**隐式读取注册表系统代理**（`HKCU\...\Internet Settings` 的 Clash `127.0.0.1:7890`），导致国内数据请求被迫绕道代理 → 返回 502 / ProxyError。**即使 shell 没有 `HTTP_PROXY` 环境变量也会发生**（这是 Windows 特有的坑）。设 `NO_PROXY='*'` 后 `requests.getproxies()` 返回 `{'no':'*'}`，全 bypass。
+
+**命门 ②：避开东财 push2 源，改用新浪/百度源**
+
+`push2.eastmoney.com` 子域在 Clash TUN 下路由不通（7890 代理返回 502、TUN 直连 000 reset；且**非 TLS 指纹问题**——`curl_cffi` 模拟 Chrome 亦失败）。新浪 `hq.sinajs.cn`、百度、腾讯域名可达。
+
+**完整可用配方（实测通过，一次拉 5527 只全市场）：**
+
+```python
+import os
+os.environ['NO_PROXY']='*'          # ← 命门①，没有这行国内请求必绕道代理失败
+import akshare as ak
+
+# 行情（新浪源 hq.sinajs.cn，可达）：
+df = ak.stock_zh_a_spot()           # 5527只，代码格式 sh600900，筛选用 df[df['名称']=='长江电力']
+
+# 估值（百度股市通源，可达）：
+ak.stock_zh_valuation_baidu(symbol="600900", indicator="总市值", period="近一年")
+#   indicator 可选：总市值 / 市盈率 / 市净率 / 股息率（逐只取）
+```
+
+**接口可用性速查（按数据源判断）：**
+
+| 接口 | 数据源 | 本环境 | 用途 |
+|------|--------|:---:|------|
+| `stock_zh_a_spot` | 新浪 | ✅ | 实时行情（价/量/涨跌） |
+| `stock_zh_valuation_baidu` | 百度 | ✅ | PE/PB/市值/股息率 |
+| `stock_zh_a_spot_em` | 东财 push2 | ❌ | TUN 下不通 |
+| `stock_individual_info_em` | 东财 push2 | ❌ | TUN 下不通 |
+| `stock_zh_a_hist` | 东财 push2 | ❌ | TUN 下不通 |
+
+> **规律**：数据源是**新浪/百度/腾讯 → 可用**；数据源是**东财 push2 → 不可用**。挑接口时认准数据源。
+>
+> **新浪行情源无 PE/PB/市值**，估值需另用百度源 `stock_zh_valuation_baidu` 逐只补。如需单只一次拿齐完整估值字段（PE-TTM/PB/市值/股息率），备选方案：Chrome navigate 雪球个股页 `https://xueqiu.com/S/SH{code}` + evaluate 提取（当日实时，SSR 完整估值表）。
+>
+> **AkShare 取数失败的诊断顺序**：① 是否忘了 `NO_PROXY='*'`？→ 报 ProxyError 多半是命门①；② 是否用了东财 push2 源接口？→ 报 ConnectionError/RemoteDisconnected 多半是命门②，换新浪/百度源即可。
 
 ---
 
