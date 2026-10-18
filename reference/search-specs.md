@@ -68,6 +68,19 @@
 
 ---
 
+### 🧰 取数与校验工具（v3.0，优先使用）
+
+**估值取数**：`python tools/fetch_valuation.py --industry {行业} --targets tools/targets/{行业}.json`
+
+- 输出 `output/_data/{行业}-valuation-{YYYYMMDD}.json`（schema=`valuation-v1`）；报告估值表必须引用该 JSON，由 `validate_report.py` 逐值核对。
+- 数据源自动降级：腾讯行情（主）→ 东财 push2 → AkShare 百度源；JSON 中记录每只标的的实际来源与行情时间戳。
+- **环境差异说明**：2026-06-16 曾记录"东财 push2 在 TUN 下不通"；2026-10-18 复测东财可访问、AkShare 百度源的"市盈率/股息率"接口报错。**不要硬编码单一数据源**，以工具自动降级和 JSON 记录为准。
+- 其余网页搜索仍按下方 Chrome 工具链执行；估值数字不再依赖 Chrome 抓取。
+
+**报告校验**：`python tools/validate_report.py "output/_drafts/{报告}.md" --data-dir output/_data --publish-dir output`（P0 门禁，详见 `tools/README.md`）。
+
+---
+
 ### ⚠️ AkShare 本环境使用须知（必读，2026-06-16 实测）
 
 > 本工作环境为 **Windows + Clash 全局代理（TUN + fake-ip 模式）**。AkShare **默认配置在此环境会失败**，必须按下述两点处理，否则反复踩坑（报 ProxyError / ConnectionError / RemoteDisconnected）。

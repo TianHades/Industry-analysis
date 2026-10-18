@@ -6,7 +6,8 @@ main_idea: |
   将行业分析拆解为可行性、规模性、防守性、盈利性四个基本面维度，
   叠加估值映射、外部驱动力扫描和景气度追踪，输出身份导向的行业分析报告。
 total_skills: 14
-generated_at: 2026-06-10
+generated_at: 2026-10-18
+report_contract: v3.0（14 固定模块 + 机器校验门禁）
 ---
 
 # 《如何快速了解一个行业》技能库
@@ -71,6 +72,16 @@ generated_at: 2026-06-10
 | 原独立工程 StockReview | `historical-review/分析技能层/` | 8 个历史对照技能（核心 `historical-stage-benchmarking`）+ 案例数据层（22 个行业档案）+ 3 份对照示范，见 [historical-review/分析技能层/INDEX.md](historical-review/分析技能层/INDEX.md) 与 [MERGE_MANIFESTO.md](historical-review/MERGE_MANIFESTO.md) |
 
 > 调用方式为**半自动**：orchestrator 不自动调用该层；报告产出后，按 [交接文档](reference/如何接入StockReview做历史对照.md) 的 14 维特征向量契约由用户显式触发。该层 8 个技能已注册（连同顶层 14 个共 22 个技能可被发现）。
+
+### 🧰 报告流水线（tools/）
+
+| 工具 | 作用 |
+|------|------|
+| `tools/fetch_valuation.py` | 估值取数（腾讯行情为主，东财/百度兜底）→ `output/_data/*-valuation-*.json` |
+| `tools/validate_report.py` | 报告契约 v3.0 机器校验（P0 门禁）→ 通过后发布 + `*.check.json` |
+| `tools/tests/selftest.py` | 校验器回归测试（合格/不合格/篡改/发布四种场景） |
+
+> 报告流程：草稿写 `output/_drafts/` → 取数 JSON → 校验 P0=0 → 发布 `output/`。契约见 [reference/output-template.md](reference/output-template.md)（v3.0），工具说明见 [tools/README.md](tools/README.md)。
 
 ---
 
@@ -196,6 +207,7 @@ graph LR
 | 批判整合 | 2026-06-10 | 基于 BOOK_OVERVIEW.md 的系统批判注入每个子技能的 B 字段 | ✅ 完成 |
 | StockReview 桥接 | 2026-06-14~16 | 初版 historical-case-matching 桥接 skill → 发现与 StockReview 原生 historical-stage-benchmarking 方法论重复 → 降级为 reference 交接文档（见 reference/如何接入StockReview做历史对照.md） | ✅ 完成 |
 | 收编 StockReview | 2026-10-18 | 独立工程 StockReview 整体迁入为 `historical-review/` 历史对照层（8 技能 + 22 案例 + 3 示范），路径改工程内相对路径、8 技能注册，调用方式维持半自动；原著 epub 未随迁 | ✅ 完成 |
+| 报告契约 v3 + 机器校验 | 2026-10-18 | 固定 14 模块与报告头 metadata；新增 `tools/validate_report.py`（P0 门禁）与 `tools/fetch_valuation.py`（估值数据可追溯）；移除 8 份旧报告；orchestrator 升至 v3.0.0 | ✅ 完成 |
 
 ### 关系统计
 

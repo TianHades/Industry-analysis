@@ -5,8 +5,16 @@
 # 这些产物含本机绝对路径、易变、无保留价值，不应进入版本库
 # 下方规则覆盖已观察到的临时文件命名模式
 #
-# 默认保留：工程配置 .claude/settings.json、产出目录 output/
+# 默认保留：工程配置 .claude/settings.json、已发布报告 output/*.md 与 *.check.json
 # ============================================================
+
+# ---- 报告流水线中间产物（草稿、取数 JSON 不入库）----
+output/_drafts/
+output/_data/
+
+# ---- 一次性取数脚本产物 / 搜索残留 ----
+tmp_*.json
+search_*.txt
 
 # ---- 搜索引擎结果缓存（百度 / Google）----
 baidu_*.json

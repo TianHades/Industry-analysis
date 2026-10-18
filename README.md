@@ -4,7 +4,7 @@
 
 ## 架构特点
 
-本技能库采用 **模块化微核架构**：13 个独立子技能 + 1 个总成技能 + 5 个共享参考文件，通过 `industry-analysis-orchestrator` 统一调度；另含 2026-10-18 收编的 `historical-review/` 历史对照层（8 个技能 + 22 个案例档案，半自动调用）。
+本技能库采用 **模块化微核架构**：13 个独立子技能 + 1 个总成技能 + 5 个共享参考文件，通过 `industry-analysis-orchestrator` 统一调度；另含 2026-10-18 收编的 `historical-review/` 历史对照层（8 个技能 + 22 个案例档案，半自动调用）与 `tools/` 报告流水线（契约校验 + 估值取数）。
 
 每个子技能遵循 **RI-A1-A2-E-B** 六段结构：
 - **R**（原文引用）：书中关键段落
@@ -55,10 +55,11 @@
 
 | 文件 | 内容 |
 |------|------|
-| `reference/output-template.md` | 完整报告输出模板 |
+| `reference/output-template.md` | **报告契约 v3.0**：14 固定模块、报告头 metadata、估值表与校验规则 |
 | `reference/search-specs.md` | 搜索工具链、Google操作符、按阶段定向搜索指引 |
-| `reference/data-annotation-standards.md` | 数据标注格式、时效校验规则、冲突仲裁规则 |
+| `reference/data-annotation-standards.md` | 符号体系、数据标注格式、时效校验规则、冲突仲裁规则 |
 | `reference/methodology-catalog.md` | 方法速查卡片、核心概念定义 |
+| `reference/如何接入StockReview做历史对照.md` | 报告 → historical-review 层的 14 维交接契约与自检 |
 | `BOOK_OVERVIEW.md` | 对原著的系统批判（作者局限、立场盲点、未证明假设） |
 | `INDEX.md` | 技能全景图、关系图、学习路径 |
 
@@ -75,9 +76,38 @@
 
 > 8 个历史对照技能已注册进 `.claude/settings.json`（连同顶层 14 个技能，共 22 个可被发现），但不在 orchestrator 流水线内自动执行。
 
-## 报告产出
+## 报告流水线工具（tools/）
 
-旧版 8 份行业分析报告已于 2026-10-18 整体移除（经审查存在数据核算与模板偏差，不逐条勘误），备份于 `D:\workspace\01-投研主链\_archive\20261018_reports_backup`。新报告将按新版报告契约生成并写入 [output/](output/)，**须通过自动化校验后方可交付**（契约与校验工具的建设见迁移计划）。
+| 工具 | 作用 |
+|------|------|
+| [tools/fetch_valuation.py](tools/fetch_valuation.py) | 估值取数（腾讯行情为主，东财/百度兜底）→ `output/_data/*-valuation-*.json` |
+| [tools/validate_report.py](tools/validate_report.py) | 报告契约 v3.0 机器校验（P0 门禁）→ 通过后发布 + `*.check.json` |
+| [tools/tests/selftest.py](tools/tests/selftest.py) | 校验器回归测试（合格/不合格/篡改/发布四种场景） |
+
+> 详细用法见 [tools/README.md](tools/README.md)。
+
+## 报告产出（v3.0 流水线）
+
+旧版 8 份行业分析报告已于 2026-10-18 整体移除（经审查存在数据核算与模板偏差，不逐条勘误），备份于 `D:\workspace\01-投研主链\_archive\20261018_reports_backup`。
+
+新报告按 **报告契约 v3.0** 生成，流程如下：
+
+```bash
+# 1) 取数（估值，输出 output/_data/{行业}-valuation-{YYYYMMDD}.json）
+python tools/fetch_valuation.py --industry 白酒 --targets tools/targets/白酒.json --date 2026-10-16
+
+# 2) 写草稿（output/_drafts/），报告头写全 YAML metadata（见 reference/output-template.md）
+
+# 3) 机器校验（P0 必须为 0）
+python tools/validate_report.py "output/_drafts/白酒行业-行业分析报告（投资者版）.md" \
+    --data-dir output/_data --publish-dir output
+
+# 4) 产物：output/{报告}.md + output/{报告}.check.json（自动校验行由脚本注入）
+```
+
+- 目录约定：`output/_drafts/`（草稿，不入库）、`output/_data/`（取数 JSON，不入库）、`output/*.md + *.check.json`（发布版，入库）。
+- 校验器回归测试：`python tools/tests/selftest.py`。
+- 工具说明见 [tools/README.md](tools/README.md)。
 
 ## 方法论来源
 

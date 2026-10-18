@@ -1,0 +1,76 @@
+{
+  "schema": "valuation-v1",
+  "industry": "白酒",
+  "fetched_at": "2026-10-17",
+  "fetched_at_iso": "2026-10-17T16:00:00+08:00",
+  "currency": "CNY",
+  "source": "fixture: 测试用固定数据（非实时）",
+  "items": [
+    {
+      "code": "600519",
+      "name": "贵州茅台",
+      "segment": "高端",
+      "price": 1500.0,
+      "chg_pct": 0.5,
+      "amount": 3200000000.0,
+      "pe_ttm": 25.5,
+      "pb": 8.1,
+      "mktcap": 19000.0,
+      "div_yield": 2.5,
+      "sources": ["fixture"]
+    },
+    {
+      "code": "000858",
+      "name": "五粮液",
+      "segment": "高端",
+      "price": 150.0,
+      "chg_pct": -0.3,
+      "amount": 1200000000.0,
+      "pe_ttm": 18.2,
+      "pb": 4.5,
+      "mktcap": 5800.0,
+      "div_yield": 3.1,
+      "sources": ["fixture"]
+    },
+    {
+      "code": "000568",
+      "name": "泸州老窖",
+      "segment": "高端",
+      "price": 180.0,
+      "chg_pct": 0.2,
+      "amount": 800000000.0,
+      "pe_ttm": 20.1,
+      "pb": 6.2,
+      "mktcap": 2650.0,
+      "div_yield": 2.8,
+      "sources": ["fixture"]
+    },
+    {
+      "code": "600809",
+      "name": "山西汾酒",
+      "segment": "次高端",
+      "price": 200.0,
+      "chg_pct": 0.1,
+      "amount": 500000000.0,
+      "pe_ttm": 22.3,
+      "pb": 7.4,
+      "mktcap": 2440.0,
+      "div_yield": 1.9,
+      "sources": ["fixture"]
+    },
+    {
+      "code": "002304",
+      "name": "洋河股份",
+      "segment": "次高端",
+      "price": 80.0,
+      "chg_pct": -0.4,
+      "amount": 300000000.0,
+      "pe_ttm": 14.8,
+      "pb": 2.9,
+      "mktcap": 1200.0,
+      "div_yield": 4.5,
+      "sources": ["fixture"]
+    }
+  ],
+  "errors": []
+}
