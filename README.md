@@ -108,6 +108,7 @@ python tools/validate_report.py "output/_drafts/白酒行业-行业分析报告�
 - 目录约定：`output/_drafts/`（草稿，不入库）、`output/_data/`（取数 JSON，不入库）、`output/*.md + *.check.json`（发布版，入库）。
 - 校验器回归测试：`python tools/tests/selftest.py`。
 - 工具说明见 [tools/README.md](tools/README.md)。
+- **首份通过校验并发布的报告**：[output/白酒行业-行业分析报告（投资者版）.md](output/白酒行业-行业分析报告（投资者版）.md)（2026-10-18 试点；已知数据缺口见报告「数据时效性与质量说明」）。
 
 ## 方法论来源
 

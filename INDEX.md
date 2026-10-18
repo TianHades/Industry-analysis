@@ -208,6 +208,7 @@ graph LR
 | StockReview 桥接 | 2026-06-14~16 | 初版 historical-case-matching 桥接 skill → 发现与 StockReview 原生 historical-stage-benchmarking 方法论重复 → 降级为 reference 交接文档（见 reference/如何接入StockReview做历史对照.md） | ✅ 完成 |
 | 收编 StockReview | 2026-10-18 | 独立工程 StockReview 整体迁入为 `historical-review/` 历史对照层（8 技能 + 22 案例 + 3 示范），路径改工程内相对路径、8 技能注册，调用方式维持半自动；原著 epub 未随迁 | ✅ 完成 |
 | 报告契约 v3 + 机器校验 | 2026-10-18 | 固定 14 模块与报告头 metadata；新增 `tools/validate_report.py`（P0 门禁）与 `tools/fetch_valuation.py`（估值数据可追溯）；移除 8 份旧报告；orchestrator 升至 v3.0.0 | ✅ 完成 |
+| 首份 v3 试点报告 | 2026-10-18 | 白酒行业（投资者版）通过 P0=0/P1=0 校验并发布（`output/` 报告 + `.check.json`）；数据缺口以 🔴 标注 | ✅ 完成 |
 
 ### 关系统计
 

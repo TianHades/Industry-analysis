@@ -1,0 +1,13 @@
+{
+  "schema": "check-v1",
+  "validator_version": "3.0.0",
+  "report": "白酒行业-行业分析报告（投资者版）.md",
+  "industry": "白酒",
+  "identity": "投资者",
+  "passed": true,
+  "p0": [],
+  "p1": [],
+  "checked_at": "2026-10-18T23:18:56+0800",
+  "template_version": "3.0",
+  "orchestrator_version": "3.0"
+}
