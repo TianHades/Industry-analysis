@@ -114,5 +114,5 @@ graph TD
 ## 审计轨迹
 
 - 候选单元池: [candidates/](./candidates/)
-- 被淘汰的候选 (含原因): 未随收编保留
+- 被淘汰的候选 (含原因): 见 [verified.md](./verified/verified.md)
 - BOOK_OVERVIEW: 未单独合并（核心内容见《行业生命周期全景框架_蒸馏笔记》第零章）
