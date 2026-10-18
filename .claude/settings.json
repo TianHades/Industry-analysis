@@ -1,5 +1,5 @@
 {
   "skills": {
-    "directories": ["*/"]
+    "directories": ["*/", "historical-review/分析技能层/*/"]
   }
 }

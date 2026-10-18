@@ -4,7 +4,7 @@
 
 ## 架构特点
 
-本技能库采用 **模块化微核架构**：13 个独立子技能 + 4 个共享参考文件，通过 `industry-analysis-orchestrator` 统一调度。
+本技能库采用 **模块化微核架构**：13 个独立子技能 + 1 个总成技能 + 5 个共享参考文件，通过 `industry-analysis-orchestrator` 统一调度；另含 2026-10-18 收编的 `historical-review/` 历史对照层（8 个技能 + 22 个案例档案，半自动调用）。
 
 每个子技能遵循 **RI-A1-A2-E-B** 六段结构：
 - **R**（原文引用）：书中关键段落
@@ -61,6 +61,19 @@
 | `reference/methodology-catalog.md` | 方法速查卡片、核心概念定义 |
 | `BOOK_OVERVIEW.md` | 对原著的系统批判（作者局限、立场盲点、未证明假设） |
 | `INDEX.md` | 技能全景图、关系图、学习路径 |
+
+## 历史对照层（historical-review/）
+
+2026-10-18 收编原独立工程 StockReview 为本工程的 `historical-review/` 层，用于报告产出后的"像→不像→像"历史对照。**调用方式维持半自动**：orchestrator 不自动调用该层，需要时由用户显式触发。
+
+| 组成 | 内容 |
+|------|------|
+| 分析技能层 | 8 个历史对照技能（核心 `historical-stage-benchmarking`），见 [historical-review/分析技能层/INDEX.md](historical-review/分析技能层/INDEX.md) |
+| 案例数据层 | 22 个行业完整档案（11 周期制造型 + 4 技术迭代型 + 7 品牌消费型），见 [historical-review/行业案例档案库/README.md](historical-review/行业案例档案库/README.md) |
+| 对照演示 | 3 份完整对比示范 + 统一框架 [行业生命周期全景框架_蒸馏笔记.md](historical-review/行业生命周期全景框架_蒸馏笔记.md) |
+| 交接契约 | 报告 → 对照的 14 维特征向量映射表，见 [reference/如何接入StockReview做历史对照.md](reference/如何接入StockReview做历史对照.md) |
+
+> 8 个历史对照技能已注册进 `.claude/settings.json`（连同顶层 14 个技能，共 22 个可被发现），但不在 orchestrator 流水线内自动执行。
 
 ## 示例报告
 

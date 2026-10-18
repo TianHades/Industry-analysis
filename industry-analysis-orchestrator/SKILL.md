@@ -173,7 +173,7 @@ related_skills:
    - 设定"验证/证伪"条件清单
    - 完成标准: 追踪方案表 + 验证条件清单
 
-> 🔗 **历史对照（在 StockReview 工程完成）**：本工程职责到产出含完整基本面数据的报告为止。"像→不像→像"历史对照由 StockReview 原生技能 `historical-stage-benchmarking` 承载。报告产出后，按 `reference/如何接入StockReview做历史对照.md` 的 14 维特征向量映射表交接契约，切到 StockReview 执行。
+> 🔗 **历史对照（在本工程 `historical-review/` 层完成，半自动）**：本工程职责到产出含完整基本面数据的报告为止。"像→不像→像"历史对照由 historical-review 层原生技能 `historical-stage-benchmarking` 承载（该层 2026-10-18 由独立 StockReview 工程收编，8 个技能已注册，但**不进入本 orchestrator 的自动调用链**）。报告产出后，按 `reference/如何接入StockReview做历史对照.md` 的 14 维特征向量映射表交接契约，由用户显式触发对照层执行。
 
 ### 第四阶段：综合报告输出（5-10分钟）
 

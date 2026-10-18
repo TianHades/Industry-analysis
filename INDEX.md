@@ -64,6 +64,14 @@ generated_at: 2026-06-10
 | 行业定义与边界 | `industry-definition` | 确定分析范围和产业链结构 |
 | 身份导向输出 | `identity-oriented-output` | 根据用户身份定制分析方案和叙事结构 |
 
+### 🕰️ 历史对照层（8 个）— 2026-10-18 收编
+
+| 来源 | 路径 | 说明 |
+|------|------|------|
+| 原独立工程 StockReview | `historical-review/分析技能层/` | 8 个历史对照技能（核心 `historical-stage-benchmarking`）+ 案例数据层（22 个行业档案）+ 3 份对照示范，见 [historical-review/分析技能层/INDEX.md](historical-review/分析技能层/INDEX.md) 与 [MERGE_MANIFESTO.md](historical-review/MERGE_MANIFESTO.md) |
+
+> 调用方式为**半自动**：orchestrator 不自动调用该层；报告产出后，按 [交接文档](reference/如何接入StockReview做历史对照.md) 的 14 维特征向量契约由用户显式触发。该层 8 个技能已注册（连同顶层 14 个共 22 个技能可被发现）。
+
 ---
 
 ## 技能关系图
@@ -187,6 +195,7 @@ graph LR
 | 关系建模 | 2026-06-10 | 识别 18 条技能间关系（9 depends-on + 6 composes-with + 3 contrasts-with） | ✅ 完成 |
 | 批判整合 | 2026-06-10 | 基于 BOOK_OVERVIEW.md 的系统批判注入每个子技能的 B 字段 | ✅ 完成 |
 | StockReview 桥接 | 2026-06-14~16 | 初版 historical-case-matching 桥接 skill → 发现与 StockReview 原生 historical-stage-benchmarking 方法论重复 → 降级为 reference 交接文档（见 reference/如何接入StockReview做历史对照.md） | ✅ 完成 |
+| 收编 StockReview | 2026-10-18 | 独立工程 StockReview 整体迁入为 `historical-review/` 历史对照层（8 技能 + 22 案例 + 3 示范），路径改工程内相对路径、8 技能注册，调用方式维持半自动；原著 epub 未随迁 | ✅ 完成 |
 
 ### 关系统计
 
