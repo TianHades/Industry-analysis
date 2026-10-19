@@ -633,10 +633,10 @@ def check_arithmetic(res: Result, lines: list[str]) -> None:
                 if len(vals) >= 2 and not (95 <= sum(vals) <= 105):
                     res.warn("W-MATH-SUM", f"「{hc}」列合计 {sum(vals):.1f}%（请确认是否为全集）", tb["rows"][0]["line"])
                 break
-    # PE 中位数复算（模块 11 内）
+    # PE 中位数复算（模块 11 内；“中位数约 X 倍”才算声明，避免“PE 中位数、7 家市值”误报）
     for idx, line in enumerate(lines):
         if "PE" in line and "中位数" in line:
-            m = re.search(r"中位数[^0-9]{0,10}(\d+(?:\.\d+)?)", line)
+            m = re.search(r"中位数[^0-9]{0,10}(\d+(?:\.\d+)?)\s*倍", line)
             if not m:
                 continue
             stated = float(m.group(1))
