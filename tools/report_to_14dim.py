@@ -61,12 +61,6 @@ def _section(modules: dict[int, str], *nums: int) -> str:
     return "\n".join(modules.get(n, "") for n in nums)
 
 
-def _first_sentence(text: str, limit: int = 90) -> str:
-    text = re.sub(r"\s+", " ", text).strip()
-    m = re.search(r"[^。；\n]{4,}", text)
-    return _clean(m.group(0), limit) if m else _clean(text, limit)
-
-
 def _sentence_with(text: str, kw: str, limit: int = 70) -> str:
     for seg in re.split(r"[。；\n]", text):
         if kw in seg:
@@ -173,20 +167,26 @@ def _dim4(mods: dict[int, str]) -> tuple[str, str, bool]:
         v, ev = sorted(candidates, key=score, reverse=True)[0]
         if not v.startswith(("+", "-")):
             v = "+" + v
-        needs_review = bool(re.search(r"年均|十四五年均", ev))
+        # 同一报告里“产量/收入/用电量”等多口径并存，或取到“年均”值时，必须人工确认
+        needs_review = len({x[0] for x in candidates}) > 1 or bool(re.search(r"年均|十四五年均", ev))
         return f"{v}%（{ev}）", "报告模块 3/7", needs_review
     return "N/A（报告未给出需求量增速）", "报告模块 3/7", True
 
 
-def _dim5(mods: dict[int, str]) -> tuple[str, str, bool]:
-    text = mods.get(11, "")
-    m = re.search(r"(PE|PB)[^。；\n]{0,40}?(\d{1,3}(?:\.\d+)?)\s*%分位", text)
-    if m:
-        return f"{m.group(1)} {m.group(2)}%分位", "报告模块 11", False
-    m2 = re.search(r"(\d{1,3}(?:\.\d+)?)\s*%分位", text)
-    if m2:
-        return f"{m2.group(1)}%分位", "报告模块 11", False
-    if re.search(r"未取|未获取|N/A|不适用", text):
+def _dim5(mods: dict[int, str], text: str, industry: str) -> tuple[str, str, bool]:
+    # 优先模块 11；报告有时只在“核心发现/摘要”里给分位
+    candidates: list[tuple[str, str, str]] = []
+    for src, blob in (("报告模块 11", mods.get(11, "")), ("报告全文", text)):
+        for m in re.finditer(r"(PE|PB)[^。；\n]{0,40}?(\d{1,3}(?:\.\d+)?)\s*%\s*分位", blob):
+            candidates.append((f"{m.group(1)} {m.group(2)}%分位", src, blob[max(0, m.start() - 30):m.start()]))
+        for m in re.finditer(r"(\d{1,3}(?:\.\d+)?)\s*%\s*分位", blob):
+            candidates.append((f"{m.group(1)}%分位", src, blob[max(0, m.start() - 30):m.start()]))
+    if candidates:
+        # 同一报告可能同时引用“行业 PE 分位”和“本行业 PE 分位”，优先取上下文含本行业名的
+        chosen = next((c for c in candidates if industry and industry in c[2]), candidates[0])
+        review = len({c[0] for c in candidates}) > 1
+        return chosen[0], chosen[1], review
+    if re.search(r"未取|未获取|N/A|不适用", mods.get(11, "")):
         return "N/A（未取历史分位）", "报告模块 11", False
     return "N/A（未取历史分位）", "报告模块 11", True
 
@@ -216,6 +216,9 @@ def _dim6(mods: dict[int, str], text: str) -> tuple[str, str, bool]:
 
 def _dim7(mods: dict[int, str], text: str) -> tuple[str, str, bool]:
     section = mods.get(12, "")
+    m = re.search(r"政策敏感度[^。；\n]{0,20}?(极高|高|中|低)", text)
+    if m:
+        return m.group(1), "报告全文（政策敏感度）", False
     m = re.search(r"(?:P\s*政治|政策敏感度)[^。；\n]{0,60}?(极高|高|中|低)", section)
     if m:
         return m.group(1), "报告模块 12（P 政治）", False
@@ -244,7 +247,9 @@ def _dim8(mods: dict[int, str]) -> tuple[str, str, bool]:
         lo, hi = float(m2.group(1)), float(m2.group(2))
         avg = (lo + hi) / 2
         level = "极高" if avg > 5 else "高" if avg >= 3 else "中" if avg >= 1 else "低"
-        return f"{level}（{m2.group(1)}-{m2.group(2)}年）", "报告模块 2/10（按投产/储存周期映射）", False
+        durations = re.findall(r"(?<!\d)(\d{1,2}(?:\.\d+)?)\s*[-–~]\s*(\d{1,2}(?:\.\d+)?)\s*年", text)
+        needs_review = len(set(durations)) > 1
+        return f"{level}（{m2.group(1)}-{m2.group(2)}年）", "报告模块 2/10（按投产/储存周期映射）", needs_review
     return "中（🔍 待复核）", "报告模块 2/10", True
 
 
@@ -252,6 +257,8 @@ def _dim9(mods: dict[int, str], text: str) -> tuple[str, str, bool]:
     section = _section(mods, 6) + "\n" + text[:6000]
     if re.search(r"价格接受者|成本传导(不畅|弱|差)", section):
         return "弱（价格接受者）", "报告模块 6", False
+    if re.search(r"(无|没有|缺乏|不具备|较弱).{0,6}定价权", section):
+        return "弱（无定价权）", "报告模块 6", False
     if re.search(r"品牌定价权|定价权|提价能力|提价贡献", section):
         return "强（品牌定价权/提价能力）", "报告模块 6", False
     if re.search(r"部分传导|成本传导[^。；\n]{0,10}(中|部分)|电价传导|受管制|受监管|市场化传导", section):
@@ -329,7 +336,7 @@ def extract_report(report_path: str | Path) -> dict:
     results[2] = _dim2(mods)
     results[3] = _dim3(mods)
     results[4] = _dim4(mods)
-    results[5] = _dim5(mods)
+    results[5] = _dim5(mods, text, industry)
     results[6] = _dim6(mods, text)
     results[7] = _dim7(mods, text)
     results[8] = _dim8(mods)
@@ -343,7 +350,13 @@ def extract_report(report_path: str | Path) -> dict:
     vector = {str(k): v[0] for k, v in results.items()}
     sources = {str(k): v[1] for k, v in results.items()}
     review = [str(k) for k, v in results.items() if v[2]]
-    gaps = [f"第{k}维：{sources[str(k)]}（{vector[str(k)]}）" for k in review]
+    gaps = []
+    if meta.get("schema") != "report-v3":
+        gaps.append("报告 metadata 缺少 schema=report-v3；抽取结果仅供起草参考")
+    if not mods:
+        gaps.append("未识别到 `### N.` 模块标题（报告不符合 report-v3 结构）")
+    for k in review:
+        gaps.append(f"第{k}维：{sources[str(k)]}（{vector[str(k)]}）")
     return {
         "industry": industry,
         "as_of": as_of,
@@ -378,18 +391,24 @@ def main() -> int:
     ap.add_argument("--strict", action="store_true", help="存在待复核维度时退出码 2")
     ap.add_argument("--compare", help="与已有向量 JSON 对比，打印逐维差异")
     ap.add_argument("--force", action="store_true", help="允许覆盖已存在的 --out 文件")
-    ap.add_argument("--selftest", action="store_true", help="对 3 份已发布报告做抽取自测")
+    ap.add_argument("--selftest", action="store_true", help="对全部已发布报告做抽取自测")
     args = ap.parse_args()
 
     if args.selftest:
         reports = sorted(Path("output").glob("*行业-行业分析报告（投资者版）.md"))
-        if len(reports) != 3:
-            print(f"SELFTEST FAILED: 预期 3 份报告，实际 {len(reports)}")
+        if not reports:
+            print("SELFTEST FAILED: output/ 下未找到已发布报告")
             return 1
         for r in reports:
             payload = extract_report(r)
             if len(payload["vector"]) != 14 or len(payload["sources"]) != 14:
                 print(f"SELFTEST FAILED: {r.name} 维度不完整")
+                return 1
+            if any(not v.strip() for v in payload["vector"].values()):
+                print(f"SELFTEST FAILED: {r.name} 存在空向量值")
+                return 1
+            if not payload["vector"]["3"].startswith("CR3"):
+                print(f"SELFTEST FAILED: {r.name} 第 3 维不符合 CR3 口径：{payload['vector']['3']}")
                 return 1
         print(f"SELFTEST PASSED: {len(reports)} 份报告均抽取 14/14 维")
         return 0

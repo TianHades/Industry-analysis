@@ -109,13 +109,13 @@ python tools/validate_report.py "output/_drafts/电力行业-行业分析报告�
 python tools/case_match.py --query tools/examples/电力-14dim.json --top 5
 ```
 
-流程：报告 → 14 维向量 JSON（`tools/examples/`）→ 与 22 个案例匹配 → 按 HBS 技能「像→不像→像」人工复核 → 产出 `output/历史对照-{行业}-{日期}.md`。
+流程：报告 → 14 维向量 JSON（`tools/examples/`；`tools/report_to_14dim.py` 可先生成草稿）→ 与 22 个案例匹配 → 按 HBS 技能「像→不像→像」人工复核 → 产出 `output/历史对照-{行业}-{日期}.md`。
 
 自动生成 14 维草稿：
 
 ```bash
 python tools/report_to_14dim.py --report "output/电力行业-行业分析报告（投资者版）.md" \
-    --out tools/examples/电力-14dim.draft.json
+    --out output/_data/电力-14dim.draft.json
 # 复核 review_required / gaps 后，再 --compare 已有人工向量
 ```
 已实测三种分支：白酒（实质对标）、电力（部分相似/驱动不同）、保险（诚实判停：无好对标）。
@@ -210,7 +210,7 @@ python tools/ci_check.py
 | 技能关系一致性 | frontmatter 多类型声明 | 0 对（方案 A） |
 | 校验器自测 | good/bad fixture、篡改检测、发布产物 | SELFTEST PASSED |
 | 已发布报告校验 | `output/*.md` 中 report-v3 文档逐个跑 P0 校验 | 3 份通过 |
-| 案例库一致性 | 22 案例关系 0 问题、14 维 0 漂移、匹配可运行 | OK |
+| 案例库一致性 | 22 案例关系 0 问题、14 维 0 漂移、匹配可运行、报告→14维 14/14 | OK |
 
 **本次验证记录（2026-10-19）**：
 
@@ -220,7 +220,7 @@ python tools/ci_check.py
 [PASS] 技能关系一致性: 多类型声明 0 对（方案 A）
 [PASS] 校验器自测: PASS
 [PASS] 已发布报告校验: 3 份 report-v3 报告（跳过 3 个非报告文档）
-[PASS] 案例库一致性: 关系 OK；14 维 OK；14 维匹配 OK
+[PASS] 案例库一致性: 关系 OK；14 维 OK；14 维匹配 OK；报告→14维 OK
 
 结果：PASS
 ```
@@ -309,5 +309,6 @@ python tools/ci_check.py
 - [x] 3 份报告 check.json 均 `passed: true`
 - [x] 3 份历史对照文件存在、链接可达
 - [x] 22 个案例 14 维单值、关系 0 问题
+- [x] 报告→14 维自动抽取：已发布报告 3/3 通过
 - [x] 技能关系多类型 0 对
 - [x] 全库 81 个 Markdown、0 断链

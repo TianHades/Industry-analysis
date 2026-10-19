@@ -78,7 +78,7 @@ python tools/tests/selftest.py
 | 脚本 | 作用 |
 |------|------|
 | `tools/gen_skill_relations.py` | 从 14 个技能 frontmatter 生成关系元数据清单（42 条声明 → 33 对，多类型 0/双向 9）；`--write` 更新 INDEX 自动段；`--fix` 按方案 A 幂等清理多类型声明（存在多类型时默认退出码 1） |
-| `tools/ci_check.py` | 一键回归：链接检查、22 技能结构、技能关系一致性、校验器自测、已发布报告校验、案例库一致性；提交前运行 |
+| `tools/ci_check.py` | 一键回归：链接检查、22 技能结构、技能关系一致性、校验器自测、已发布报告校验、案例库一致性（含报告→14维自测）；提交前运行 |
 
 ```bash
 python tools/ci_check.py     # 期望输出：结果：PASS

@@ -9,6 +9,7 @@
   4. 已发布报告机器校验（output/*.md）
   5. 案例关系一致性（tools/check_case_relations.py）
   6. 案例 14 维标准化漂移（tools/normalize_case_vectors.py dry-run 应 0 改动）
+   并跑 tools/report_to_14dim.py --selftest（已发布报告 14/14 维）
 
 用法：python tools/ci_check.py
 退出码：0=全部通过；1=存在失败项
