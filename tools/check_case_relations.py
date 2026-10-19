@@ -283,7 +283,7 @@ def write_graph(cases: list[dict], desired: dict) -> None:
     # 2) 生成"全部案例关联一览（自动生成）"
     detail = ["## 全部案例关联一览（自动生成）", "",
               "> 由 `tools/check_case_relations.py --write-graph` 从各案例 frontmatter 自动生成；"
-              "手工精选版见上节“重点案例关联详情”。", ""]
+              "手工精选版见上节“单案例关联详情”。", ""]
     for c in sorted(cases, key=lambda x: (FOLDER_ORDER.get(x["path"].parent.name, 9), x["path"].name)):
         if not c["name"]:
             continue
@@ -292,6 +292,8 @@ def write_graph(cases: list[dict], desired: dict) -> None:
         detail.append("| 关联案例 | 关系 | 说明 |")
         detail.append("|----------|------|------|")
         for e in desired.get(c["name"], []):
+            if e["slug"] in DEMO_SLUGS:
+                continue
             target = next((x for x in cases if x["name"] == e["slug"]), None)
             tname = target["path"].stem.replace("_完整案例", "") if target else e["slug"]
             detail.append(f"| {tname} | {e['relation']} | {e['note'] or '—'} |")

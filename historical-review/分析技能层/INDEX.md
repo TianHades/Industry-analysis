@@ -34,7 +34,7 @@
 ### 历史对标与复盘
 
 - [`historical-stage-benchmarking`](./historical-stage-benchmarking/SKILL.md) -- "像→不像→像"三阶段认知校准模型：先从表面找相似，再识别关键差异，最后在驱动力层面回归共性规律，避免"这次完全一样"和"这次完全不一样"两个极端。
-- [`industry-replay-methodology`](./industry-replay-methodology/SKILL.md) -- 将申万宏源机构级研究方法论降维为个人可执行的五步复盘 SOP（事件日历→信号日志→驱动力验证→跨期类比→关键假设表），是统筹其他所有 skill 的"元能力"。
+- [`industry-replay-methodology`](./industry-replay-methodology/SKILL.md) -- 将申万宏源机构级研究方法论降维为个人可执行的六步复盘 SOP（事件日历→信号日志→驱动力验证→跨期类比→关键假设表），是统筹其他所有 skill 的"元能力"。
 
 ---
 

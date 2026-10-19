@@ -355,7 +355,7 @@ def check_modules(res: Result, mods: list[dict], meta: dict, identity: str, stag
         t = m["text"].strip()
         if stage in {"成熟期", "衰退期"}:
             if "不适用" in t and len(t) < 150:
-                res.fail("E-MOD-10", "模块 10 写“不适用”时必须给出 ≥30 字理由", m["start"] + 1)
+                res.fail("E-MOD-10", "模块 10 写“不适用”时必须给出 ≥150 字理由（成熟期/衰退期需实质说明）", m["start"] + 1)
             elif len(t) < 120:
                 res.fail("E-MOD-10", "模块 10 产能/库存周期分析过于简略（成熟期/衰退期必须实质展开）", m["start"] + 1)
         elif len(t) < 60 and "不适用" not in t:
@@ -462,6 +462,9 @@ def check_valuation(res: Result, mod: dict, lines: list[str], meta: dict, identi
             res.fail("E-VAL-02", f"估值表出现占位符「{bad[0]}」（{code or '未知标的'}）：取不到应标“亏损”或“—”并说明", row["line"])
             continue
         pe_cell, pb_cell = cell(pe_i), cell(pb_i)
+        pe_num = as_num(pe_cell)
+        if pe_num is not None and pe_num <= 0:
+            res.fail("E-VAL-10", f"PE 非正数（{code or '未知标的'}）：亏损标的应标“亏损”并改用 PS 及依据", row["line"])
         has_value = as_num(pe_cell) is not None or "亏损" in pe_cell or as_num(pb_cell) is not None
         if has_value:
             valid_rows += 1
@@ -633,6 +636,30 @@ def check_arithmetic(res: Result, lines: list[str]) -> None:
                 if len(vals) >= 2 and not (95 <= sum(vals) <= 105):
                     res.warn("W-MATH-SUM", f"「{hc}」列合计 {sum(vals):.1f}%（请确认是否为全集）", tb["rows"][0]["line"])
                 break
+    # 合计总市值复算（warning）：防止正文汇总与估值表求和漂移
+    for idx, line in enumerate(lines):
+        if "合计总市值" not in line and not ("合计" in line and "总市值" in line):
+            continue
+        m = re.search(r"([\d,]+(?:\.\d+)?)\s*亿元", line)
+        if not m:
+            continue
+        stated = float(m.group(1).replace(",", ""))
+        best = None
+        for tb in all_tables:
+            mc = col_index(tb["header"], ["总市值"])
+            if mc is None:
+                continue
+            start_line = tb["rows"][0]["line"] if tb["rows"] else 0
+            if abs(start_line - (idx + 1)) > 120:
+                continue
+            vals = [as_num(r["cells"][mc]) for r in tb["rows"] if mc < len(r["cells"])]
+            vals = [v for v in vals if v is not None]
+            if vals:
+                best = sum(vals)
+        if best is not None and abs(stated - best) > max(1.0, 0.02 * abs(best)):
+            res.warn("W-MATH-MCAP",
+                     f"文中合计总市值 {stated:.2f} 亿元与估值表求和 {best:.2f} 亿元不符（请复核）", idx + 1)
+
     # PE 中位数复算（模块 11 内；“中位数约 X 倍”才算声明，避免“PE 中位数、7 家市值”误报）
     for idx, line in enumerate(lines):
         if "PE" in line and "中位数" in line:

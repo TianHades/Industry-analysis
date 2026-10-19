@@ -86,6 +86,11 @@ def to_float(v):
         return None
 
 
+def positive_or_none(v):
+    """PE/PB 等估值指标非正数（亏损/资不抵债）归一为 None，原值另存 *_raw 便于复核。"""
+    return v if (v is not None and v > 0) else None
+
+
 # ------------------------------------------------------------------ sources
 def fetch_tencent(codes: list[str], errors: list[str]) -> tuple[dict, str | None]:
     """腾讯行情：一次批量取全部。返回 {code: {...}}, data_date"""
@@ -108,13 +113,17 @@ def fetch_tencent(codes: list[str], errors: list[str]) -> tuple[dict, str | None
             ts = f[30] if len(f) > 30 else ""
             if len(ts) >= 8 and data_date is None:
                 data_date = f"{ts[0:4]}-{ts[4:6]}-{ts[6:8]}"
+            pe_raw = to_float(f[39]) if len(f) > 39 else None
+            pb_raw = to_float(f[46]) if len(f) > 46 else None
             out[code] = {
                 "price": to_float(f[3]),
                 "chg_pct": to_float(f[32]),
                 "amount": to_float(f[37]) if len(f) > 37 else None,
-                "pe_ttm": to_float(f[39]) if len(f) > 39 else None,
+                "pe_ttm": positive_or_none(pe_raw),
+                "pe_ttm_raw": pe_raw,
                 "mktcap": to_float(f[45]) if len(f) > 45 else None,
-                "pb": to_float(f[46]) if len(f) > 46 else None,
+                "pb": positive_or_none(pb_raw),
+                "pb_raw": pb_raw,
                 "div_yield": None,
                 "quote_time": ts,
                 "source": "tencent:qt.gtimg.cn",
@@ -139,12 +148,16 @@ def fetch_eastmoney(code: str, errors: list[str]) -> dict | None:
         price = to_float(d.get("f43"))
         if price is not None and price > 10000:
             price = price / 100.0
+        pe_raw = (to_float(d.get("f162")) / 100.0) if to_float(d.get("f162")) else None
+        pb_raw = (to_float(d.get("f167")) / 100.0) if to_float(d.get("f167")) else None
         return {
             "price": price,
             "chg_pct": None,
             "amount": None,
-            "pe_ttm": (to_float(d.get("f162")) / 100.0) if to_float(d.get("f162")) else None,
-            "pb": (to_float(d.get("f167")) / 100.0) if to_float(d.get("f167")) else None,
+            "pe_ttm": positive_or_none(pe_raw),
+            "pe_ttm_raw": pe_raw,
+            "pb": positive_or_none(pb_raw),
+            "pb_raw": pb_raw,
             "mktcap": (to_float(d.get("f116")) / 1e8) if to_float(d.get("f116")) else None,
             "div_yield": None,
             "quote_time": "",
@@ -167,7 +180,10 @@ def fetch_baidu(code: str, errors: list[str]) -> dict:
         try:
             df = ak.stock_zh_valuation_baidu(symbol=code, indicator=indicator, period="近一年")
             if df is not None and len(df) > 0:
-                out[key] = to_float(df.iloc[-1].get("value", df.iloc[-1].iloc[-1]))
+                val = to_float(df.iloc[-1].get("value", df.iloc[-1].iloc[-1]))
+                if key == "pb":
+                    val = positive_or_none(val)
+                out[key] = val
         except Exception as exc:
             errors.append(f"baidu {code} {indicator}: {exc}")
     if out:
@@ -210,6 +226,9 @@ def main(argv: list[str] | None = None) -> int:
                     for k in ("pe_ttm", "pb", "mktcap", "price"):
                         if item.get(k) is None and em.get(k) is not None:
                             item[k] = em[k]
+                    for k in ("pe_ttm_raw", "pb_raw"):
+                        if item.get(k) is None and em.get(k) is not None:
+                            item[k] = em[k]
                     item["source"] = item.get("source", "") + "+" + em["source"]
         item = quotes.get(code)
         if item is not None and item.get("pb") is None:
@@ -221,6 +240,10 @@ def main(argv: list[str] | None = None) -> int:
                 item["source"] = item.get("source", "") + "+" + bd["source"]
 
     date_str = args.date or data_date or datetime.now().strftime("%Y-%m-%d")
+    if args.date and not data_date and not args.allow_date_mismatch:
+        print(f"[ERROR] 无法从行情源确认数据日期（腾讯时间戳缺失），不能把实时行情标成 --date {args.date}。", file=sys.stderr)
+        print("        如确需覆盖，请加 --allow-date-mismatch 并自行承担口径风险。", file=sys.stderr)
+        return 2
     if args.date and data_date and args.date != data_date and not args.allow_date_mismatch:
         print(f"[ERROR] --date {args.date} 与行情数据日期 {data_date} 不一致。", file=sys.stderr)
         print("        行情接口返回的是最新价/盘中价，不能标成历史日期（会污染报告数据溯源）。", file=sys.stderr)
@@ -243,7 +266,9 @@ def main(argv: list[str] | None = None) -> int:
             "chg_pct": q.get("chg_pct"),
             "amount": q.get("amount"),
             "pe_ttm": q.get("pe_ttm"),
+            "pe_ttm_raw": q.get("pe_ttm_raw"),
             "pb": q.get("pb"),
+            "pb_raw": q.get("pb_raw"),
             "mktcap": q.get("mktcap"),
             "div_yield": q.get("div_yield"),
             "quote_time": q.get("quote_time"),

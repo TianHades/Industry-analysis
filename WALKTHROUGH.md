@@ -78,7 +78,8 @@ python tools/fetch_valuation.py --industry 电力 --targets tools/targets/电力
 在 `output/_drafts/` 写 `{行业}行业-行业分析报告（投资者版）.md`：
 - 报告头 YAML metadata（schema/report-v3、industry、identity、generated_at、data_cutoff、valuation_fetch_date、lifecycle_stage、penetration、evidence_files）；
 - 8 个大节 + 14 个固定模块（定义/产业链/生命周期/核心假设/时空对标/商业模式/市场规模/护城河/竞争/产能库存/估值/PEST/景气/第二曲线）；
-- 估值表 ≥5 只标的，数值必须来自取数 JSON。
+- 估值表 ≥5 只标的，数值必须来自取数 JSON；
+- 数据搜索/网页抓取工具**以运行时实际可用为准**：Chrome MCP（`browse`/`extract`）或内置 `web_search`/`web_fetch`，规范见 `reference/search-specs.md`。
 
 ### 3.4 机器校验（P0 门禁）
 
@@ -123,7 +124,7 @@ python tools/ci_check.py
 
 - **14 个固定模块**，顺序固定；缺模块/顺序错 = P0；
 - **metadata 必填**：`schema: report-v3`、industry、identity、generated_at、data_cutoff、valuation_fetch_date、template_version、orchestrator_version、lifecycle_stage、penetration、evidence_files；
-- **估值表**：投资者版 ≥5 只；单元格不得出现"待补/未获取"；`获取时间` 必须等于 `valuation_fetch_date`；数值与 `evidence_files` 的 JSON **逐值一致**（价/PE/PB/市值容差比对）；
+- **估值表**：投资者版 ≥5 只；单元格不得出现"待补/未获取"；`获取时间` 必须等于 `valuation_fetch_date`；数值与 `evidence_files` 的 JSON **逐值一致**（价/PE/PB/市值容差比对）；PE/PB 非正数应标"亏损"/"—"（校验器 E-VAL-10）；正文"合计总市值"须与估值表求和一致（校验器 W-MATH-MCAP）；
 - **符号规则**：🟢 实际数据（行内禁预测词）、🟡 预测（必须带 4 位年份）、🟠 历史、🔴 不确定、🔍 推断、🔒 需人工、⏳ 待验证；
 - **数据时效**：行业数据默认年度、估值数据为取数日快照；盘中/午间快照必须在表前注明，不得称"收盘"。
 
@@ -228,6 +229,7 @@ python tools/ci_check.py
 | 工程化收尾（2026-10-19） | `ci_check.py` 一键回归；`gen_skill_relations.py` 关系清单；targets 扩至 4 行业；清理 `_archive` 备份（约 52 MB） |
 | 历史对照实测（2026-10-19） | 白酒（实质对标）、电力（部分相似）、保险（判停）三种 HBS 分支落地 |
 | 关系裁决（2026-10-19） | 9 对多类型声明收敛为单类型（52→42 条声明、多类型 9→0） |
+| 全量审视修复（2026-10-19） | 修复电力报告合计总市值算术错误；搜索规范改为运行时自适应（Chrome MCP / 内置工具）；校正模板模块 7 深度规则、orchestrator 失效引用、README/交接文档旧备份路径；校验器新增 PE 非正数与合计总市值检查；3 份报告 metadata 统一 3.0.0 并重新发布 |
 | Walkthrough（2026-10-19） | 本文档 + 全链路验收 |
 
 关键提交（最新在前）：`77282c9` 保险对照 → `d1d342c` 关系裁决 → `ebeddb6` 电力对照 → `fdd593e` 电力报告 → `7221718` 白酒对照 → `c75dcf6` P2 收尾。
@@ -248,6 +250,7 @@ python tools/ci_check.py
 | 8 | 机器校验不保证商业结论正确 | 可能存在"合规但错误" | 发布前仍需人工/专业复核 |
 | 9 | 技能关系"编排视角 17 条"为手工维护 | 与自动元数据段并存 | 已在 INDEX 说明两者关系；改关系时先跑 `gen_skill_relations.py` |
 | 10 | 历史对照结论依赖 14 维框架 | 金融/服务业适配不足 | 见第 2 条；必要时扩展维度框架 |
+| 11 | 搜索/抓取工具随运行时变化（Chrome MCP vs 内置 `web_search`/`web_fetch`） | 执行细节可能不同 | 规范已改为自适应；以当前运行时可用工具为准 |
 
 ---
 

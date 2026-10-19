@@ -5,12 +5,15 @@
 ## 1. 取数：fetch_valuation.py
 
 ```bash
-# 用装有 akshare 的 Python（本机为系统 Python 3.10）
-python tools/fetch_valuation.py --industry 白酒 --targets tools/targets/白酒.json --date 2026-10-16
+# 用装有 akshare 的 Python（本机为系统 Python 3.10）；默认取行情返回的日期
+python tools/fetch_valuation.py --industry 白酒 --targets tools/targets/白酒.json
+
+# 如需固定历史日期：--date 2026-10-16（仅当行情源返回的日期与之一致时才允许）
 ```
 
 - 输出 `output/_data/{industry}-valuation-{YYYYMMDD}.json`（schema=`valuation-v1`）。
-- 数据日期默认取**行情接口返回的时间戳**（周末/节假日即最后交易日）；`--date` 传入的日期若与行情时间戳不一致，脚本会报错退出，防止把盘中/最新价标成历史日期（确需覆盖加 `--allow-date-mismatch`）。
+- 数据日期默认取**行情接口返回的时间戳**（周末/节假日即最后交易日）；`--date` 与行情时间戳不一致、或行情源未返回时间戳时，脚本会报错退出，防止把盘中/最新价标成历史日期（确需覆盖加 `--allow-date-mismatch`）。
+- PE/PB 非正数（亏损/资不抵债）会归一为 `null`，原值保留在 `pe_ttm_raw` / `pb_raw`；报告估值表应标"亏损"或"—"并说明，不得手写 0/负数。
 - 依赖：`pip install -r tools/requirements.txt`；必须 `NO_PROXY='*'`（脚本已内置），使用腾讯行情为主、东财/百度兜底。
 - 报告估值表必须引用该 JSON；`validate_report.py` 会逐值比对（防手抄/换算错）。
 
@@ -25,6 +28,7 @@ python tools/validate_report.py "output/_drafts/白酒行业-行业分析报告�
 - 退出码：`0` 通过（可含 P1 警告）；`1` 存在 P0 失败；`2` 用法错误。
 - 通过且指定 `--publish-dir` 时：复制到 `output/`，并写 `{报告名}.check.json`，同时向「数据时效性与质量说明」注入“自动校验：通过”行。
 - 失败时按 P0 逐条修复；P1 警告须在质量说明中回应或修复。
+- 关键规则补充：估值表 PE/PB 非正数应标"亏损"/"—"（E-VAL-10）；正文"合计总市值"须与估值表求和一致（W-MATH-MCAP）；批量/草稿校验建议不带 `--publish-dir`（发布是独立步骤）。
 
 ## 3. 回归测试
 

@@ -1,27 +1,27 @@
 # 搜索执行规范
 
-> 此文件被所有子技能的 E（执行步骤）章节引用，定义统一的搜索工具使用标准和数据获取流程。
+> 此文件被 orchestrator 与多数子技能的 E（执行步骤）章节引用，定义统一的搜索工具使用标准和数据获取流程。
 
 ---
 
 ## 搜索工具链
 
-**优先使用 Chrome 浏览器进行搜索**（通过 `mcp__chrome__browse` + Google/Baidu），搜索结果为最新且来源更权威。
+**以当前运行时实际可用的工具为准，不绑定单一平台**：
 
-**三步工具链**：
+- 若环境提供浏览器 MCP（如 `mcp__chrome__browse` / `extract` / `evaluate`），优先用 Chrome——真浏览器可处理 JS 渲染、登录态、反爬页；
+- 若环境只提供内置搜索/抓取工具（如 DSH 的 `web_search` / `web_fetch`），直接用内置工具，不必强求 Chrome；
+- 不使用个别平台的**专有内置工具**（如 `webReader`）——换模型基座即失效；
+- 同一数据需求尽量用 2 个渠道交叉验证（见文末"渠道穷尽"）。
 
-| 步骤 | 工具 | 用途 | 说明 |
-|------|------|------|------|
-| ① 搜索 | Chrome + Google/Baidu | 发现信息源 | `browse(action="open")` 打开搜索引擎 |
-| ② 提取 | Chrome `extract(type="text")` | 从搜索结果页获取链接和摘要 | 快速扫描，筛选高价值页面 |
-| ③ 深度阅读 | Chrome `extract(type="text"/"html")` | 抓取具体文章/报告页面正文 | `browse(open, wait=networkidle)` 后 `extract`，JS 渲染后取正文 |
+**三步工具链（两种运行时等价）**：
 
-**网页抓取统一用 Chrome（不依赖 WebFetch / webReader）**
-- 本工程**不用 WebFetch / webReader** 抓取网页：WebFetch 在多数 agent 运行时不存在；`webReader` 是个别模型平台（如智谱 Z.ai）的**专有内置工具，换模型基座即失效，不可移植**。
-- **统一用 Chrome**：`browse(open)` 导航 → `extract(type="text"` 取纯文本 / `type="html"` 取结构化`)` → 需读 JS 渲染数据时用 `evaluate`。Chrome 是真浏览器，JS 渲染、登录态、反爬页都能处理，且为用户级跨平台配置，**换模型不丢失**。
-- 逐篇抓链接内容：循环 `open + extract`（每篇两步），比单步工具略重但可移植、可靠。
+| 步骤 | Chrome MCP 环境 | 内置搜索环境（DSH 等） | 用途 |
+|------|-----------------|--------------------------|------|
+| ① 搜索 | `browse(action="open")` + Google/Baidu | `web_search(queries=[...])` | 发现信息源 |
+| ② 提取 | Chrome `extract(type="text")` | `web_fetch(url)` | 从搜索结果页/文章取正文 |
+| ③ 深度阅读 | `browse` + `extract` / `evaluate` | `web_fetch` 逐篇读取 | 处理 JS 渲染/结构化数据 |
 
-**搜索时效控制**：Google 搜索使用 `tbs=qdr:w`（近一周）或 `tbs=qdr:m`（近一月）过滤时效。
+**搜索时效控制**：Google 搜索用 `tbs=qdr:w`（近一周）/ `tbs=qdr:m`（近一月）；内置搜索用查询词自带年份/季度限定。
 
 ---
 
@@ -59,9 +59,9 @@
 | 平台 | 数据类型 | 接入方式 | 适用场景 |
 |------|---------|----------|----------|
 | **AkShare**（推荐） | A股/港股/宏观/行业全品类 | Bash: `python -c "import akshare as ak; ..."` | 财报、估值、行情、宏观指标 |
-| **东方财富/雪球** | A股实时行情、估值、分红 | Chrome navigate+extract | PE/PB/股息率、机构研报 |
-| **国家统计局官网** | 宏观数据、行业统计 | Chrome navigate+extract | 行业产值、用电量、人口 |
-| **各部委/行业协会官网** | 细分行业统计数据 | Chrome navigate+extract | 中电联电力数据、中汽协汽车产销 |
+| **东方财富/雪球** | A股实时行情、估值、分红 | 浏览器 MCP 或内置抓取 | PE/PB/股息率、机构研报 |
+| **国家统计局官网** | 宏观数据、行业统计 | 浏览器 MCP 或内置抓取 | 行业产值、用电量、人口 |
+| **各部委/行业协会官网** | 细分行业统计数据 | 浏览器 MCP 或内置抓取 | 中电联电力数据、中汽协汽车产销 |
 | **Wind/Bloomberg** | 专业金融终端 | ❌ 无公开 API，需人工访问 | 深度估值、机构一致预期 |
 
 > **AkShare 优先**：当需要财务数据、估值指标、行业统计数据时，首选 AkShare 一行命令取数，比从网页抓取更快更准。如未安装：`pip install akshare -q`
@@ -75,13 +75,13 @@
 - 输出 `output/_data/{行业}-valuation-{YYYYMMDD}.json`（schema=`valuation-v1`）；报告估值表必须引用该 JSON，由 `validate_report.py` 逐值核对。
 - 数据源自动降级：腾讯行情（主）→ 东财 push2 → AkShare 百度源；JSON 中记录每只标的的实际来源与行情时间戳。
 - **环境差异说明**：2026-06-16 曾记录"东财 push2 在 TUN 下不通"；2026-10-18 复测东财可访问、AkShare 百度源的"市盈率/股息率"接口报错。**不要硬编码单一数据源**，以工具自动降级和 JSON 记录为准。
-- 其余网页搜索仍按下方 Chrome 工具链执行；估值数字不再依赖 Chrome 抓取。
+- 其余网页搜索按上方工具链（Chrome MCP 或内置搜索/抓取）执行；估值数字不再依赖网页抓取。
 
 **报告校验**：`python tools/validate_report.py "output/_drafts/{报告}.md" --data-dir output/_data --publish-dir output`（P0 门禁，详见 `tools/README.md`）。
 
 ---
 
-### ⚠️ AkShare 本环境使用须知（必读，2026-06-16 实测）
+### ⚠️ AkShare 本环境使用须知（必读，2026-10-18 更新）
 
 > 本工作环境为 **Windows + Clash 全局代理（TUN + fake-ip 模式）**。AkShare **默认配置在此环境会失败**，必须按下述两点处理，否则反复踩坑（报 ProxyError / ConnectionError / RemoteDisconnected）。
 
@@ -89,9 +89,9 @@
 
 Python 的 requests 在 Windows 上会**隐式读取注册表系统代理**（`HKCU\...\Internet Settings` 的 Clash `127.0.0.1:7890`），导致国内数据请求被迫绕道代理 → 返回 502 / ProxyError。**即使 shell 没有 `HTTP_PROXY` 环境变量也会发生**（这是 Windows 特有的坑）。设 `NO_PROXY='*'` 后 `requests.getproxies()` 返回 `{'no':'*'}`，全 bypass。
 
-**命门 ②：避开东财 push2 源，改用新浪/百度源**
+**命门 ②：数据源以实测为准（2026-10-18 更新）**
 
-`push2.eastmoney.com` 子域在 Clash TUN 下路由不通（7890 代理返回 502、TUN 直连 000 reset；且**非 TLS 指纹问题**——`curl_cffi` 模拟 Chrome 亦失败）。新浪 `hq.sinajs.cn`、百度、腾讯域名可达。
+2026-06-16 曾记录 `push2.eastmoney.com` 在 Clash TUN 下不通（7890 代理 502、直连 reset）；2026-10-18 复测东财 push2 可访问。**不要硬编码单一数据源**：优先使用 `tools/fetch_valuation.py`（腾讯主源 + 东财/百度自动降级），以 JSON 中记录的实际来源为准。
 
 **完整可用配方（实测通过，一次拉 5527 只全市场）：**
 
@@ -110,19 +110,19 @@ ak.stock_zh_valuation_baidu(symbol="600900", indicator="总市值", period="近�
 
 **接口可用性速查（按数据源判断）：**
 
-| 接口 | 数据源 | 本环境 | 用途 |
+| 接口 | 数据源 | 本环境（2026-10-18 复测） | 用途 |
 |------|--------|:---:|------|
 | `stock_zh_a_spot` | 新浪 | ✅ | 实时行情（价/量/涨跌） |
-| `stock_zh_valuation_baidu` | 百度 | ✅ | PE/PB/市值/股息率 |
-| `stock_zh_a_spot_em` | 东财 push2 | ❌ | TUN 下不通 |
-| `stock_individual_info_em` | 东财 push2 | ❌ | TUN 下不通 |
-| `stock_zh_a_hist` | 东财 push2 | ❌ | TUN 下不通 |
+| `stock_zh_valuation_baidu` | 百度 | ✅（市盈率/股息率字段 2026-10 曾报错，以工具降级为准） | PE/PB/市值/股息率 |
+| `stock_zh_a_spot_em` | 东财 push2 | ⚠️ 2026-06 曾不通，2026-10 复测可用 | 实时行情 |
+| `stock_individual_info_em` | 东财 push2 | ⚠️ 2026-06 曾不通，2026-10 复测可用 | 个股信息 |
+| `stock_zh_a_hist` | 东财 push2 | ⚠️ 2026-06 曾不通，2026-10 复测可用 | 历史行情 |
 
-> **规律**：数据源是**新浪/百度/腾讯 → 可用**；数据源是**东财 push2 → 不可用**。挑接口时认准数据源。
+> **规律**：优先新浪/百度/腾讯；东财 push2 状态随网络环境变化，以 `tools/fetch_valuation.py` 的自动降级与 JSON 记录为准。
 >
-> **新浪行情源无 PE/PB/市值**，估值需另用百度源 `stock_zh_valuation_baidu` 逐只补。如需单只一次拿齐完整估值字段（PE-TTM/PB/市值/股息率），备选方案：Chrome navigate 雪球个股页 `https://xueqiu.com/S/SH{code}` + evaluate 提取（当日实时，SSR 完整估值表）。
+> **估值优先用工具取数**：`tools/fetch_valuation.py` 已统一处理估值字段；如工具取数失败，报告对应行标“—”且不计有效家数，不得用浏览器/估算值替代 JSON 数值（浏览器抓取仅可用于核对来源）。
 >
-> **AkShare 取数失败的诊断顺序**：① 是否忘了 `NO_PROXY='*'`？→ 报 ProxyError 多半是命门①；② 是否用了东财 push2 源接口？→ 报 ConnectionError/RemoteDisconnected 多半是命门②，换新浪/百度源即可。
+> **AkShare 取数失败的诊断顺序**：① 是否忘了 `NO_PROXY='*'`？→ 报 ProxyError 多半是命门①；② 是否用了不稳定的东财 push2 源接口？→ 报 ConnectionError/RemoteDisconnected 时换新浪/百度/腾讯源。
 
 ---
 
@@ -152,7 +152,7 @@ ak.stock_zh_valuation_baidu(symbol="600900", indicator="总市值", period="近�
 | 优先级 | 搜索主题 | 关键词模板 | 验证假设 |
 |--------|---------|-----------|----------|
 | ★★★ | 市场规模测算 | `"{行业} TAM SAM SOM"` `"{行业} 市场规模 2025 2026"` | "市场空间足够大且持续增长" |
-| ★★★ | 渗透率与增速 | `"{行业} 渗透率 2025"` `"{行业} 增速 CAGR"` | "渗透率处于20-40%成长期" |
+| ★★★ | 渗透率与增速 | `"{行业} 渗透率 2025"` `"{行业} 增速 CAGR"` | "渗透率 15%-20%→35%-40% 为成长期（20%-40% 是其中加速段）" |
 | ★★☆ | 竞争格局初判 | `"{行业} 市场份额 排名"` `"{行业} 龙头企业"` | — |
 | ★★☆ | UE模型数据 | `"{行业} 客单价"` `"{行业} 毛利率"` `"单店模型 {行业}"` | — |
 
@@ -190,12 +190,12 @@ ak.stock_zh_valuation_baidu(symbol="600900", indicator="总市值", period="近�
 
 | 原则 | 说明 |
 |------|------|
-| **渠道穷尽** | 每个数据需求至少用 2 个渠道验证（Google + Baidu，或 Chrome + AkShare） |
+| **渠道穷尽** | 每个数据需求至少用 2 个渠道验证（Google + Baidu，或浏览器 + AkShare，或内置搜索 + 抓取） |
 | **不砍搜索** | 只要还有高价值数据未获取，就继续搜索 |
-| **并行搜索** | 多个独立搜索同时发起（同一轮内并行调用 Chrome / AkShare） |
+| **并行搜索** | 多个独立搜索同时发起（同一轮内并行调用浏览器/内置搜索 / AkShare） |
 | **控制的是噪音而非次数** | 搜索结果重复或信息饱和时自然停止，而非靠硬性上限 |
 | 企业分析 | 不限 TOP5，有足够数据可扩展到 TOP10 |
-| 政策时效 | 近 1-2 年，重要政策不受年限限制 |
+| 政策时效 | 政策法规 ≤3 年；重要政策可延长但须标 🟠 并在质量说明解释 |
 | 深度分析 | 标注"可深入研究"，不在首次完成 |
 
 ---
@@ -203,5 +203,5 @@ ak.stock_zh_valuation_baidu(symbol="600900", indicator="总市值", period="近�
 ## 信息茧房防范
 
 - 主动搜索**反面观点**（如"{行业} 风险"、"{行业} 争议"、"为什么{行业}不行"）
-- 使用 Chrome 无痕模式或隐私窗口进行搜索，减少个性化算法干扰
+- 使用浏览器无痕模式/隐私窗口，或在内置搜索中主动加"风险/争议/反面"查询，减少个性化算法干扰
 - 同一问题用不同角度提问，交叉比对结果
