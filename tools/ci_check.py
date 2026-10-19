@@ -85,9 +85,11 @@ def check_skills() -> tuple[bool, str]:
 
 
 def check_reports() -> tuple[bool, str]:
-    reports = sorted((ROOT / "output").glob("*.md"))
+    all_md = sorted((ROOT / "output").glob("*.md"))
+    reports = [r for r in all_md if "schema: report-v3" in r.read_text(encoding="utf-8")[:2000]]
+    skipped = len(all_md) - len(reports)
     if not reports:
-        return True, "无已发布报告（跳过）"
+        return True, "无 report-v3 已发布报告（跳过）"
     failures = []
     data_dir = ROOT / "output" / "_data"
     for r in reports:
@@ -103,17 +105,22 @@ def check_reports() -> tuple[bool, str]:
         if not result.get("passed"):
             failures.append(f"{r.name}: P0={len(result.get('p0', []))}")
     ok = not failures
-    return ok, f"{len(reports)} 份报告" + ("\n" + "\n".join("   " + x for x in failures) if failures else "")
+    msg = f"{len(reports)} 份 report-v3 报告（跳过 {skipped} 个非报告文档）"
+    if failures:
+        msg += "\n" + "\n".join("   " + x for x in failures)
+    return ok, msg
 
 
 def check_cases() -> tuple[bool, str]:
-    import json as _json
     proc = run(["tools/check_case_relations.py"])
     rel_ok = proc.returncode == 0 and "检查问题：0" in proc.stdout
     proc2 = run(["tools/normalize_case_vectors.py"])
     norm_ok = proc2.returncode == 0 and "本次改动 0 个" in proc2.stdout and "异常案例：0 个" in proc2.stdout
-    msg = f"关系 {'OK' if rel_ok else 'FAIL'}；14 维 {'OK' if norm_ok else 'FAIL'}"
-    return rel_ok and norm_ok, msg
+    proc3 = run(["tools/case_match.py", "--query", "tools/examples/白酒-14dim.json", "--top", "1"])
+    match_ok = proc3.returncode == 0 and "案例数 22" in proc3.stdout
+    msg = (f"关系 {'OK' if rel_ok else 'FAIL'}；14 维 {'OK' if norm_ok else 'FAIL'}；"
+           f"14 维匹配 {'OK' if match_ok else 'FAIL'}")
+    return rel_ok and norm_ok and match_ok, msg
 
 
 def check_selftest() -> tuple[bool, str]:
