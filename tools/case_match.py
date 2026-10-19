@@ -247,11 +247,12 @@ def compare(query: dict, case: dict) -> tuple[float, int, dict]:
         detail[d] = {"query": qv, "case": cv, "score": s}
     if not detail:
         return 0.0, 0, {}
-    mean = sum(v["score"] for v in detail.values()) / len(detail)
-    coverage = len(detail) / 14.0
+    n_dims = len([k for k in detail if isinstance(k, int)])
+    mean = sum(v["score"] for v in detail.values()) / n_dims
+    coverage = n_dims / 14.0
     total = mean * (0.7 + 0.3 * coverage)
     detail["_skipped"] = skipped
-    return total, len(detail), detail
+    return total, n_dims, detail
 
 
 def main() -> int:

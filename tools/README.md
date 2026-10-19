@@ -16,6 +16,7 @@ python tools/fetch_valuation.py --industry 白酒 --targets tools/targets/白酒
 - PE/PB 非正数（亏损/资不抵债）会归一为 `null`，原值保留在 `pe_ttm_raw` / `pb_raw`；报告估值表应标"亏损"或"—"并说明，不得手写 0/负数。
 - 依赖：`pip install -r tools/requirements.txt`；必须 `NO_PROXY='*'`（脚本已内置），使用腾讯行情为主、东财/百度兜底。
 - 报告估值表必须引用该 JSON；`validate_report.py` 会逐值比对（防手抄/换算错）。
+- 字段语义：`fetched_at` = 行情数据日期（用于报告 data_cutoff）；`fetched_at_iso` = 实际取数执行时间；报告“获取时间”列应理解为行情数据日期。
 
 ## 2. 校验：validate_report.py
 
