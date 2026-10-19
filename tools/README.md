@@ -10,8 +10,8 @@ python tools/fetch_valuation.py --industry 白酒 --targets tools/targets/白酒
 ```
 
 - 输出 `output/_data/{industry}-valuation-{YYYYMMDD}.json`（schema=`valuation-v1`）。
-- `--date` 是**数据日期**（最后交易日/取数基准日），不是执行时间；周末运行请传最后一个交易日。
-- 依赖：`pip install -r tools/requirements.txt`；必须 `NO_PROXY='*'`（脚本已内置），使用新浪/百度源，避开东财 push2。
+- 数据日期默认取**行情接口返回的时间戳**（周末/节假日即最后交易日）；`--date` 传入的日期若与行情时间戳不一致，脚本会报错退出，防止把盘中/最新价标成历史日期（确需覆盖加 `--allow-date-mismatch`）。
+- 依赖：`pip install -r tools/requirements.txt`；必须 `NO_PROXY='*'`（脚本已内置），使用腾讯行情为主、东财/百度兜底。
 - 报告估值表必须引用该 JSON；`validate_report.py` 会逐值比对（防手抄/换算错）。
 
 ## 2. 校验：validate_report.py
@@ -46,3 +46,12 @@ python tools/tests/selftest.py
 
 - 取数依赖 akshare：本机系统 Python 3.10 已安装；DSH 内置 Python 无 akshare。
 - 校验器仅用标准库，任意 Python 3.8+ 可跑。
+
+## 6. 跨行业验证记录
+
+| 行业 | 阶段 / 类型 | 验证路径 | 暴露并已修复的问题 |
+|------|-------------|----------|--------------------|
+| 白酒 | 成熟期 / 消费 | 首次端到端：取数 → 草稿 → 校验 → 发布 | 取数源以腾讯行情为主；TAM/SAM/SOM 口径按契约修正 |
+| 保险 | 成长期后段 / 金融 | 非制造业（模块 10“不适用+理由”）、成长期模块 14 可选、金融 PE/PB 口径、午间快照 | ① 校验器在多行业取数文件共存时会按文件名盲选（已改为按 industry + fetched_at 选择）；② 取数器可能把盘中价标成历史日期（已加 `--date` 一致性守卫）；③ 盘中快照表述（契约已补规则） |
+
+> 后续行业验证时，优先检查：阶段分支（模块 10/14）、估值口径（非 PE 行业）、数据快照时点、跨行业数据文件选择。

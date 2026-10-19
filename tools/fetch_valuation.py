@@ -183,6 +183,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--codes", help="逗号分隔 code:name[:segment]")
     parser.add_argument("--outdir", default=str(DEFAULT_OUTDIR), help="输出目录（默认 output/_data）")
     parser.add_argument("--date", help="数据日期 YYYY-MM-DD（默认取行情时间戳；周末为最后交易日）")
+    parser.add_argument("--allow-date-mismatch", action="store_true",
+                        help="允许 --date 与行情时间戳日期不一致（默认禁止，防止把盘中/最新价错误标成历史日期）")
     args = parser.parse_args(argv)
 
     targets = parse_targets(args)
@@ -219,6 +221,11 @@ def main(argv: list[str] | None = None) -> int:
                 item["source"] = item.get("source", "") + "+" + bd["source"]
 
     date_str = args.date or data_date or datetime.now().strftime("%Y-%m-%d")
+    if args.date and data_date and args.date != data_date and not args.allow_date_mismatch:
+        print(f"[ERROR] --date {args.date} 与行情数据日期 {data_date} 不一致。", file=sys.stderr)
+        print("        行情接口返回的是最新价/盘中价，不能标成历史日期（会污染报告数据溯源）。", file=sys.stderr)
+        print("        如确需覆盖，请加 --allow-date-mismatch 并自行承担口径风险。", file=sys.stderr)
+        return 2
     try:
         datetime.strptime(date_str, "%Y-%m-%d")
     except ValueError:

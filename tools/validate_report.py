@@ -387,22 +387,44 @@ def check_modules(res: Result, mods: list[dict], meta: dict, identity: str, stag
 
 
 def load_valuation_file(data_dir: Path | None, meta: dict) -> tuple[dict | None, Path | None]:
+    """按报告 industry 选择对应取数 JSON（多行业共存时不能按文件名排序盲取）。"""
+
+    def _load(path: Path):
+        try:
+            return json.loads(path.read_text(encoding="utf-8")), path
+        except Exception:
+            return None, path
+
+    industry = str(meta.get("industry", "")).strip()
     if data_dir:
-        cands = sorted(Path(data_dir).glob(f"*valuation*.json"))
-        if cands:
-            path = cands[-1]
-            try:
-                return json.loads(path.read_text(encoding="utf-8")), path
-            except Exception:
-                return None, path
+        d = Path(data_dir)
+        groups = []
+        if industry:
+            groups.append(sorted(d.glob(f"{industry}-valuation-*.json")))
+        groups.append(sorted(d.glob("*valuation*.json")))
+        for cands in groups:
+            if not cands:
+                continue
+            best = None
+            for p in cands:
+                data, _ = _load(p)
+                if data is None:
+                    continue
+                if industry and str(data.get("industry", "")).strip() not in {"", industry}:
+                    continue
+                key = str(data.get("fetched_at", ""))
+                if best is None or key > best[0]:
+                    best = (key, data, p)
+            if best:
+                return best[1], best[2]
     ev = meta.get("evidence_files") or []
     if isinstance(ev, list):
         for p in ev:
             if "valuation" in str(p) and (REPO_ROOT / str(p)).exists():
-                try:
-                    return json.loads((REPO_ROOT / str(p)).read_text(encoding="utf-8")), REPO_ROOT / str(p)
-                except Exception:
-                    return None, REPO_ROOT / str(p)
+                data, path = _load(REPO_ROOT / str(p))
+                if data is not None:
+                    return data, path
+                return None, path
     return None, None
 
 

@@ -123,6 +123,7 @@ evidence_files:
 - `获取时间` 每行必须等于 `valuation_fetch_date`；`数据来源` 不得为空。
 - 数值必须来自 `evidence_files` 中的取数 JSON；校验器逐值比对（缺失即 P0）。
 - 亏损标的 PE 标"亏损"，改用 PS，并注明 PS 计算依据。
+- 若快照为盘中/午间（非收盘），须在表前注明"{valuation_fetch_date} 盘中/午间快照"，并在质量说明中说明；不得把盘中价称为收盘价。
 
 ---
 
