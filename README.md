@@ -86,6 +86,7 @@
 |------|------|
 | [tools/fetch_valuation.py](tools/fetch_valuation.py) | 估值取数（腾讯行情为主，东财/百度兜底）→ `output/_data/*-valuation-*.json` |
 | [tools/validate_report.py](tools/validate_report.py) | 报告契约 v3.0 机器校验（P0 门禁）→ 通过后发布 + `*.check.json` |
+| [tools/report_to_14dim.py](tools/report_to_14dim.py) | 从 report-v3 报告自动抽取 14 维向量草稿（🔍 维度人工复核） |
 | [tools/tests/selftest.py](tools/tests/selftest.py) | 校验器回归测试（合格/不合格/篡改/发布四种场景） |
 
 > 详细用法见 [tools/README.md](tools/README.md)。
@@ -111,7 +112,7 @@ python tools/validate_report.py "output/_drafts/白酒行业-行业分析报告�
 
 - 目录约定：`output/_drafts/`（草稿，不入库）、`output/_data/`（取数 JSON，不入库）、`output/*.md + *.check.json`（发布版，入库）。
 - 校验器回归测试：`python tools/tests/selftest.py`。
-- 提交前一键回归：`python tools/ci_check.py`（链接/22 技能结构/技能关系一致性/校验器自测/已发布报告/案例一致性）。
+- 提交前一键回归：`python tools/ci_check.py`（链接/22 技能结构/技能关系一致性/校验器自测/已发布报告/案例一致性含报告→14维）。
 - 工具说明见 [tools/README.md](tools/README.md)。
 - **已发布报告（均通过 P0=0/P1=0 校验）**：
   - [白酒行业（投资者版）](output/白酒行业-行业分析报告（投资者版）.md)（2026-10-18）

@@ -110,6 +110,14 @@ python tools/case_match.py --query tools/examples/电力-14dim.json --top 5
 ```
 
 流程：报告 → 14 维向量 JSON（`tools/examples/`）→ 与 22 个案例匹配 → 按 HBS 技能「像→不像→像」人工复核 → 产出 `output/历史对照-{行业}-{日期}.md`。
+
+自动生成 14 维草稿：
+
+```bash
+python tools/report_to_14dim.py --report "output/电力行业-行业分析报告（投资者版）.md" \
+    --out tools/examples/电力-14dim.draft.json
+# 复核 review_required / gaps 后，再 --compare 已有人工向量
+```
 已实测三种分支：白酒（实质对标）、电力（部分相似/驱动不同）、保险（诚实判停：无好对标）。
 
 ### 3.7 提交前一键回归
@@ -134,6 +142,7 @@ python tools/ci_check.py
 
 - 每个案例「四、可对比特征向量」为 **14 维、单值**（维度 1 可记录阶段序列；维度 3 严格 CR3 口径，仅有 CR5/CR10 时写"CR3 未获取（CRn=…）"，子行业差异入备注）；
 - 双时点/子行业差异写入备注（`【阶段变体：…】`），单值维度只勾选一个（其余写"该维另标注"）；
+- 报告→向量：`tools/report_to_14dim.py --report …` 生成草稿（可自动抽取的维度直接填，定性/合成维度标 🔍 待复核），确认后再写入 `tools/examples/`；
 - 维护脚本：`tools/normalize_case_vectors.py --apply --single-select`（应保持 0 改动，含维 3 CR3 口径校验）；
 - 关系：`tools/check_case_relations.py --fix --write-graph`（当前 0 问题，关系图由脚本生成）。
 
@@ -170,6 +179,7 @@ python tools/ci_check.py
 | `tools/fetch_valuation.py` | 估值取数（腾讯行情主，东财/百度兜底），输出 valuation-v1 JSON |
 | `tools/validate_report.py` | report-v3 机器校验 + 发布 + check.json |
 | `tools/ci_check.py` | 一键回归（6 项） |
+| `tools/report_to_14dim.py` | 报告→14 维向量草稿（自动抽取 + 人工复核） |
 | `tools/case_match.py` | 14 维向量 × 22 案例匹配 |
 | `tools/normalize_case_vectors.py` | 案例 14 维标准化 |
 | `tools/check_case_relations.py` | 案例关系检查/修复/关系图生成 |

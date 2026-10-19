@@ -118,9 +118,11 @@ def check_cases() -> tuple[bool, str]:
     norm_ok = proc2.returncode == 0 and "本次改动 0 个" in proc2.stdout and "异常案例：0 个" in proc2.stdout
     proc3 = run(["tools/case_match.py", "--query", "tools/examples/白酒-14dim.json", "--top", "1"])
     match_ok = proc3.returncode == 0 and "案例数 22" in proc3.stdout
+    proc4 = run(["tools/report_to_14dim.py", "--selftest"])
+    extract_ok = proc4.returncode == 0 and "SELFTEST PASSED" in proc4.stdout
     msg = (f"关系 {'OK' if rel_ok else 'FAIL'}；14 维 {'OK' if norm_ok else 'FAIL'}；"
-           f"14 维匹配 {'OK' if match_ok else 'FAIL'}")
-    return rel_ok and norm_ok and match_ok, msg
+           f"14 维匹配 {'OK' if match_ok else 'FAIL'}；报告→14维 {'OK' if extract_ok else 'FAIL'}")
+    return rel_ok and norm_ok and match_ok and extract_ok, msg
 
 
 def check_selftest() -> tuple[bool, str]:

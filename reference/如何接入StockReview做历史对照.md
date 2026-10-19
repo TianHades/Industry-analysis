@@ -13,7 +13,7 @@
 ```
 本工程 (Industry-analysis)
 ①  orchestrator 产出 output/{行业}-行业分析报告（投资者版）.md
-        ↓  按 14 维契约从报告章节摘取特征（无需切换工程目录）
+        ↓  按 14 维契约从报告章节摘取/由脚本生成草稿（无需切换工程目录）
 ②  显式调用 historical-review/分析技能层/historical-stage-benchmarking
         ↓
 ③  "像→不像→像"三段对照 + 情景推演 → 输出完整投资报告
@@ -101,6 +101,21 @@
 
 ---
 
+## 自动生成 14 维草稿（2026-10-19 起）
+
+先让脚本抽取可自动化的字段，再人工复核标 🔍 的维度：
+
+```bash
+python tools/report_to_14dim.py --report "output/电力行业-行业分析报告（投资者版）.md" \
+    --out output/_data/电力-14dim.draft.json
+```
+
+- 默认输出到 `output/_data/`，不覆盖 `tools/examples/` 的人工向量；
+- 输出含 `vector` / `sources`（每维来源模块）/ `gaps` / `review_required`；
+- `--strict`：存在待复核维度时退出码 2（发布前可用）；
+- `--compare tools/examples/电力-14dim.json`：逐维对比自动草稿与人工向量；
+- 复核完成后，再把最终向量写入 `tools/examples/{行业}-14dim.json`。
+
 ## 实测示例（2026-10-19，白酒）
 
 首次用 report-v3 报告跑通「报告 → 14 维向量 → 22 案例匹配 → HBS 像/不像/像」链路：
@@ -117,4 +132,4 @@
 - 2026-06-16（v2.2.0）：移除 Phase 3.5 自动调用，桥接 skill 降级为本文档
 - 2026-10-18：原独立工程 StockReview 收编为本工程 `historical-review/` 层，路径改为工程内相对路径，调用方式维持半自动
 - 2026-10-18（report-v3）：映射表改为按模块名引用（模块 3/7/9/10/11/12/13），报告须先通过机器校验
-- 2026-10-19：完成首次实测（白酒），新增 `tools/case_match.py` 与示例向量
+- 2026-10-19：完成首次实测（白酒），新增 `tools/case_match.py` 与示例向量；新增 `tools/report_to_14dim.py` 自动抽取草稿（人工复核）
