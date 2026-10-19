@@ -97,7 +97,7 @@ related_skills:
 
    **🔴 数据获取实操指引（本环境：Windows + Clash TUN 全局代理）**：
 
-   ⚠️ **两个命门**（缺一不可，否则 AkShare 必失败）：① 须 `os.environ['NO_PROXY']='*'` 绕过 Windows 注册表系统代理；② **避开东财 push2 源**（`stock_zh_a_spot_em`/`stock_individual_info_em`/`stock_zh_a_hist` 等在 TUN 下不通），改用新浪/百度源。
+   ⚠️ **两个命门**（缺一不可，否则 AkShare 必失败）：① 须 `os.environ['NO_PROXY']='*'` 绕过 Windows 注册表系统代理；② **数据源以实测为准**（2026-10 复测东财 push2 可访问；优先 `tools/fetch_valuation.py` 自动降级，不硬编码单一源），改用新浪/百度源。
 
    **方案一：AkShare（优先，可批量）**
    - 安装：`pip install akshare -q`
@@ -109,7 +109,7 @@ related_skills:
    # 估值（百度源）：ak.stock_zh_valuation_baidu(symbol="600900", indicator="市盈率", period="近一年")
    #   indicator 可选：市盈率 / 市净率 / 总市值 / 股息率
    ```
-   - 规律：数据源是新浪/百度/腾讯 → 可用；东财 push2 → 不可用
+   - 规律：优先新浪/百度/腾讯；东财 push2 状态随网络环境变化，以取数 JSON 记录为准
 
    **方案二：辅助核对（不替代取数 JSON）**
    - 若需核对个别字段，可用浏览器/抓取查看雪球等页面；但报告估值表的数值必须以 `output/_data/*-valuation-*.json` 为准（校验器逐值比对）。

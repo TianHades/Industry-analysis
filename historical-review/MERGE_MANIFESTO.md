@@ -2,7 +2,7 @@
 
 > 本项目合并了两份基于同一本书（《致敬，我们的市场——中国股债、行业全景复盘》）的独立蒸馏成果。
 
-> **收编注记（2026-10-18）**：本目录原为独立工程 `StockReview`，现整体迁入 `Industry-analysis/historical-review/`（目录内部结构未变，相对链接不受影响）；原路径完整备份于 `D:\workspace\01-投研主链\_archive\20261018_StockReview_backup`。下文出现的历史工程名 "StockReview/" 即指现在的 `historical-review/`。
+> **收编注记（2026-10-18）**：本目录原为独立工程 `StockReview`，现整体迁入 `Industry-analysis/historical-review/`（目录内部结构未变，相对链接不受影响）；原路径曾完整备份于 `_archive\20261018_StockReview_backup`（已于 2026-10-19 清理）。下文出现的历史工程名 "StockReview/" 即指现在的 `historical-review/`。
 
 ## 来源
 
