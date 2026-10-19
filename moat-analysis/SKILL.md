@@ -10,7 +10,7 @@ source_chapter: 第4章 防守性：护城河分析
 tags: [moat, competitive-advantage, barrier, investment]
 related_skills:
   - depends-on: [industry-lifecycle-anchoring]
-    contrasts-with: [competitive-landscape-analysis]
+    contrasts-with: []
     composes-with: [competitive-landscape-analysis]
 ---
 

@@ -152,7 +152,7 @@ graph LR
 
 ---
 
-## 关系明细（编排视角，18 条）
+## 关系明细（编排视角，17 条）
 
 | # | 源技能 | 关系类型 | 目标技能 | 说明 |
 |---|--------|----------|----------|------|
@@ -166,43 +166,42 @@ graph LR
 | 8 | external-force-scanner | depends-on | industry-lifecycle-anchoring | 外部因素对所有阶段都有影响，但分析框架需先明确阶段 |
 | 9 | business-model-feasibility | composes-with | spatial-temporal-benchmarking | 时间/空间对标是可行性验证的核心工具 |
 | 10 | market-size-estimation | composes-with | spatial-temporal-benchmarking | 终局对标为市场规模测算提供有参照的假设 |
-| 11 | moat-analysis | composes-with | competitive-landscape-analysis | 防守性+盈利性构成成熟期二维分析矩阵 |
+| 11 | moat-analysis | composes-with | competitive-landscape-analysis | 防守性+盈利性构成成熟期二维分析矩阵（单家防守 vs 行业利润分配为对比视角，已在技能 B 段说明） |
 | 12 | external-force-scanner | composes-with | spatial-temporal-benchmarking | PEST校验时空对标的"环境可比"前提 |
 | 13 | prosperity-tracking-system | composes-with | hypothesis-driven-research | 景气度指标是假设验证步骤的具体实践 |
 | 14 | competitive-landscape-analysis | composes-with | capacity-cycle-judgment | 产能周期位置决定竞争格局变化方向 |
 | 15 | identity-oriented-output | depends-on | hypothesis-driven-research | SCQR叙事框架是身份输出方案的理论基础 |
-| 16 | moat-analysis | contrasts-with | competitive-landscape-analysis | 单家防守 vs 行业利润分配 |
-| 17 | external-force-scanner | contrasts-with | prosperity-tracking-system | 中长期结构变量 vs 高频交易指标 |
-| 18 | hypothesis-driven-research | contrasts-with | spatial-temporal-benchmarking | 演绎验证 vs 类比推理 |
+| 16 | external-force-scanner | contrasts-with | prosperity-tracking-system | 中长期结构变量 vs 高频交易指标 |
+| 17 | hypothesis-driven-research | contrasts-with | spatial-temporal-benchmarking | 演绎验证 vs 类比推理 |
 
 ---
 
 ## 关系元数据全量清单（自动生成）
 
-> 由 `tools/gen_skill_relations.py --write` 从 14 个技能 frontmatter 自动生成；与上表“关系明细（编排视角 18 条）”互补，不要手工编辑本段。
+> 由 `tools/gen_skill_relations.py --write` 从 14 个技能 frontmatter 自动生成；与上表“关系明细（编排视角）”互补，不要手工编辑本段。
 
-**统计**：声明 52 条 → 去重 33 对；其中多类型对 9 个、双向声明对 17 个。
+**统计**：声明 42 条 → 去重 33 对；其中多类型对 0 个、双向声明对 9 个。
 
 | # | 技能 A | 关系（声明类型） | 技能 B | 声明方向 |
 |---|--------|------------------|--------|----------|
-| 1 | business-model-feasibility | depends-on + composes-with | industry-lifecycle-anchoring | business-model-feasibility --depends-on--> industry-lifecycle-anchoring；industry-lifecycle-anchoring --composes-with--> business-model-feasibility |
-| 2 | capacity-cycle-judgment | depends-on + composes-with | industry-lifecycle-anchoring | capacity-cycle-judgment --depends-on--> industry-lifecycle-anchoring；industry-lifecycle-anchoring --composes-with--> capacity-cycle-judgment |
-| 3 | competitive-landscape-analysis | depends-on + composes-with | industry-lifecycle-anchoring | competitive-landscape-analysis --depends-on--> industry-lifecycle-anchoring；industry-lifecycle-anchoring --composes-with--> competitive-landscape-analysis |
+| 1 | business-model-feasibility | depends-on | industry-lifecycle-anchoring | business-model-feasibility --depends-on--> industry-lifecycle-anchoring |
+| 2 | capacity-cycle-judgment | depends-on | industry-lifecycle-anchoring | capacity-cycle-judgment --depends-on--> industry-lifecycle-anchoring |
+| 3 | competitive-landscape-analysis | depends-on | industry-lifecycle-anchoring | competitive-landscape-analysis --depends-on--> industry-lifecycle-anchoring |
 | 4 | external-force-scanner | depends-on | industry-lifecycle-anchoring | external-force-scanner --depends-on--> industry-lifecycle-anchoring |
-| 5 | industry-analysis-orchestrator | depends-on + composes-with | hypothesis-driven-research | hypothesis-driven-research --composes-with--> industry-analysis-orchestrator；industry-analysis-orchestrator --depends-on--> hypothesis-driven-research |
-| 6 | identity-oriented-output | depends-on | hypothesis-driven-research | identity-oriented-output --depends-on--> hypothesis-driven-research |
-| 7 | industry-analysis-orchestrator | depends-on + composes-with | identity-oriented-output | identity-oriented-output --composes-with--> industry-analysis-orchestrator；industry-analysis-orchestrator --depends-on--> identity-oriented-output |
+| 5 | identity-oriented-output | depends-on | hypothesis-driven-research | identity-oriented-output --depends-on--> hypothesis-driven-research |
+| 6 | industry-analysis-orchestrator | depends-on | hypothesis-driven-research | industry-analysis-orchestrator --depends-on--> hypothesis-driven-research |
+| 7 | industry-analysis-orchestrator | depends-on | identity-oriented-output | industry-analysis-orchestrator --depends-on--> identity-oriented-output |
 | 8 | industry-analysis-orchestrator | depends-on | industry-lifecycle-anchoring | industry-analysis-orchestrator --depends-on--> industry-lifecycle-anchoring |
-| 9 | market-size-estimation | depends-on + composes-with | industry-lifecycle-anchoring | industry-lifecycle-anchoring --composes-with--> market-size-estimation；market-size-estimation --depends-on--> industry-lifecycle-anchoring |
-| 10 | moat-analysis | depends-on + composes-with | industry-lifecycle-anchoring | industry-lifecycle-anchoring --composes-with--> moat-analysis；moat-analysis --depends-on--> industry-lifecycle-anchoring |
-| 11 | lifecycle-valuation-map | depends-on + composes-with | industry-lifecycle-anchoring | industry-lifecycle-anchoring --composes-with--> lifecycle-valuation-map；lifecycle-valuation-map --depends-on--> industry-lifecycle-anchoring |
+| 9 | lifecycle-valuation-map | depends-on | industry-lifecycle-anchoring | lifecycle-valuation-map --depends-on--> industry-lifecycle-anchoring |
+| 10 | market-size-estimation | depends-on | industry-lifecycle-anchoring | market-size-estimation --depends-on--> industry-lifecycle-anchoring |
+| 11 | moat-analysis | depends-on | industry-lifecycle-anchoring | moat-analysis --depends-on--> industry-lifecycle-anchoring |
 | 12 | prosperity-tracking-system | depends-on | industry-lifecycle-anchoring | prosperity-tracking-system --depends-on--> industry-lifecycle-anchoring |
 | 13 | business-model-feasibility | composes-with | spatial-temporal-benchmarking | business-model-feasibility --composes-with--> spatial-temporal-benchmarking；spatial-temporal-benchmarking --composes-with--> business-model-feasibility |
 | 14 | business-model-feasibility | composes-with | industry-analysis-orchestrator | industry-analysis-orchestrator --composes-with--> business-model-feasibility |
 | 15 | capacity-cycle-judgment | composes-with | competitive-landscape-analysis | capacity-cycle-judgment --composes-with--> competitive-landscape-analysis；competitive-landscape-analysis --composes-with--> capacity-cycle-judgment |
 | 16 | capacity-cycle-judgment | composes-with | prosperity-tracking-system | capacity-cycle-judgment --composes-with--> prosperity-tracking-system；prosperity-tracking-system --composes-with--> capacity-cycle-judgment |
 | 17 | capacity-cycle-judgment | composes-with | industry-analysis-orchestrator | industry-analysis-orchestrator --composes-with--> capacity-cycle-judgment |
-| 18 | competitive-landscape-analysis | composes-with + contrasts-with | moat-analysis | competitive-landscape-analysis --contrasts-with--> moat-analysis；competitive-landscape-analysis --composes-with--> moat-analysis；moat-analysis --contrasts-with--> competitive-landscape-analysis；moat-analysis --composes-with--> competitive-landscape-analysis |
+| 18 | competitive-landscape-analysis | composes-with | moat-analysis | competitive-landscape-analysis --composes-with--> moat-analysis；moat-analysis --composes-with--> competitive-landscape-analysis |
 | 19 | competitive-landscape-analysis | composes-with | industry-analysis-orchestrator | industry-analysis-orchestrator --composes-with--> competitive-landscape-analysis |
 | 20 | competitive-landscape-analysis | composes-with | industry-definition | industry-definition --composes-with--> competitive-landscape-analysis |
 | 21 | external-force-scanner | composes-with | spatial-temporal-benchmarking | external-force-scanner --composes-with--> spatial-temporal-benchmarking；spatial-temporal-benchmarking --composes-with--> external-force-scanner |
@@ -260,6 +259,7 @@ graph LR
 | 历史对照实测（白酒） | 2026-10-19 | 新增 `tools/case_match.py` 与 `tools/examples/白酒-14dim.json`；白酒报告 → 14 维向量 → 22 案例匹配（Top1 家电 0.694）→ 按 HBS“像/不像/像”产出对照报告；ci_check 增加匹配回归并兼容非 report-v3 文档 | ✅ 完成 |
 | 第三份 v3 试点（电力） | 2026-10-19 | 电力行业（投资者版）通过 P0=0/P1=0 校验并发布（7 标的，盘中快照）；验证公用事业/重资产路径；修复校验器 PE 中位数误报（“PE 中位数、7 家…”） | ✅ 完成 |
 | 历史对照实测（电力） | 2026-10-19 | 电力报告 → 14 维向量 → 22 案例匹配（算法 Top1 汽车为表面相似，已排除；候选：电力自身 2012-2015、银行 2016-2018）→ 按 HBS 三阶段产出对照报告；新增 `tools/examples/电力-14dim.json` | ✅ 完成 |
+| 核心技能关系裁决（方案 A） | 2026-10-19 | 9 对多类型声明收敛为单类型（depends-on 保留依赖方→被依赖方；moat/competitive 统一 composes-with）；52→42 条声明、多类型 9→0；编排表 18→17 条、关系统计同步；`gen_skill_relations.py --fix` 支持幂等迁移 | ✅ 完成 |
 
 ### 关系统计
 
@@ -267,9 +267,9 @@ graph LR
 |----------|------|------|
 | depends-on | 9 | 核心锚被8个技能依赖 + identity依赖hypothesis |
 | composes-with | 6 | 工具技能被组合使用 |
-| contrasts-with | 3 | 代表不同分析路径 |
-| **合计** | **18** | 编排视角核心关系（手工维护，用于调度/关系图） |
-| **元数据声明** | **52 条 / 去重 33 对** | 来自 14 个技能 frontmatter；其中 9 对为多类型声明、17 对为双向声明，详见“关系元数据全量清单（自动生成）” |
+| contrasts-with | 2 | 代表不同分析路径 |
+| **合计** | **17** | 编排视角核心关系（手工维护，用于调度/关系图） |
+| **元数据声明** | **42 条 / 去重 33 对** | 来自 14 个技能 frontmatter；方案 A 裁决后多类型声明 0 对、双向声明 9 对，详见“关系元数据全量清单（自动生成）” |
 
 ---
 

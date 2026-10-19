@@ -10,7 +10,7 @@ source_chapter: 第5章 盈利性：竞争格局分析 + 产能周期
 tags: [competitive-landscape, market-concentration, cr-index, industry-structure]
 related_skills:
   - depends-on: [industry-lifecycle-anchoring]
-    contrasts-with: [moat-analysis]
+    contrasts-with: []
     composes-with: [moat-analysis, capacity-cycle-judgment]
 ---
 

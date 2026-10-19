@@ -11,7 +11,7 @@ tags: [industry-analysis, lifecycle, penetration-rate, innovation-diffusion]
 related_skills:
   - depends-on: []
     contrasts-with: []
-    composes-with: [business-model-feasibility, market-size-estimation, moat-analysis, competitive-landscape-analysis, capacity-cycle-judgment, lifecycle-valuation-map]
+    composes-with: []
 ---
 
 # 产业生命周期定位术 — 整个框架的"锚"

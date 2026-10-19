@@ -13,7 +13,7 @@ tags: [research-method, mece, pyramid-principle, hypothesis-driven, scqr]
 related_skills:
   - depends-on: []
     contrasts-with: [spatial-temporal-benchmarking]
-    composes-with: [prosperity-tracking-system, industry-analysis-orchestrator]
+    composes-with: [prosperity-tracking-system]
 ---
 
 # 假设驱动研究法 — 行业研究的元能力

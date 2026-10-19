@@ -13,7 +13,7 @@ tags: [output, identity, narrative, customization]
 related_skills:
   - depends-on: [hypothesis-driven-research]
     contrasts-with: []
-    composes-with: [industry-analysis-orchestrator]
+    composes-with: []
 ---
 
 # 身份导向输出 — 根据受众定制分析方案

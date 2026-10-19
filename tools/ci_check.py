@@ -129,10 +129,19 @@ def check_selftest() -> tuple[bool, str]:
     return ok, "PASS" if ok else (proc.stdout.strip() or proc.stderr.strip())[:500]
 
 
+def check_skill_relations() -> tuple[bool, str]:
+    proc = run(["tools/gen_skill_relations.py"])
+    ok = proc.returncode == 0 and "多类型 0 对" in proc.stdout
+    if ok:
+        return True, "多类型声明 0 对（方案 A）"
+    return False, (proc.stdout.strip() or proc.stderr.strip())[:500]
+
+
 def main() -> int:
     checks = [
         ("链接检查", check_links),
         ("技能结构（22）", check_skills),
+        ("技能关系一致性", check_skill_relations),
         ("校验器自测", check_selftest),
         ("已发布报告校验", check_reports),
         ("案例库一致性", check_cases),
