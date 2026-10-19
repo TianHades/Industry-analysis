@@ -391,6 +391,7 @@ def main() -> int:
     ap.add_argument("--strict", action="store_true", help="存在待复核维度时退出码 2")
     ap.add_argument("--compare", help="与已有向量 JSON 对比，打印逐维差异")
     ap.add_argument("--force", action="store_true", help="允许覆盖已存在的 --out 文件")
+    ap.add_argument("--no-write", action="store_true", help="只生成/对比，不写文件")
     ap.add_argument("--selftest", action="store_true", help="对全部已发布报告做抽取自测")
     args = ap.parse_args()
 
@@ -425,18 +426,22 @@ def main() -> int:
         print(f"ERROR: 维度缺失 {failures}")
         return 1
 
+    def emit(msg: str) -> None:
+        # --json 时只让纯 JSON 走 stdout，提示信息走 stderr
+        print(msg, file=sys.stderr if args.json else sys.stdout)
+
     if args.compare:
         old = json.loads(Path(args.compare).read_text(encoding="utf-8"))
         old_vec = old.get("vector", {})
-        print(f"=== 与 {args.compare} 对比 ===")
+        emit(f"=== 与 {args.compare} 对比 ===")
         for k in range(1, 15):
             a = old_vec.get(str(k), "")
             b = payload["vector"][str(k)]
             if a == b:
-                print(f"  {k:>2}. 相同：{a}")
+                emit(f"  {k:>2}. 相同：{a}")
             else:
-                print(f"  {k:>2}. 旧：{a}")
-                print(f"      新：{b}（{payload['sources'][str(k)]}）")
+                emit(f"  {k:>2}. 旧：{a}")
+                emit(f"      新：{b}（{payload['sources'][str(k)]}）")
 
     if args.json:
         print(json.dumps(payload, ensure_ascii=False, indent=2))
@@ -444,17 +449,20 @@ def main() -> int:
         print_summary(payload)
 
     out = Path(args.out) if args.out else _default_out(payload)
-    if out.exists() and not args.force:
-        print(f"\n未写入：{out} 已存在（加 --force 覆盖）")
+    if args.no_write:
+        emit(f"未写入（--no-write）：{out}")
+    elif out.exists() and not args.force:
+        emit(f"ERROR: {out} 已存在（加 --force 覆盖，或 --no-write 只生成）")
+        return 1
     else:
         out.parent.mkdir(parents=True, exist_ok=True)
         out.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-        print(f"\n已写入：{out}")
+        emit(f"已写入：{out}")
 
     if payload["review_required"]:
-        print(f"待复核维度：{','.join(payload['review_required'])}（见 gaps）")
+        emit(f"待复核维度：{','.join(payload['review_required'])}（见 gaps）")
     if args.strict and payload["review_required"]:
-        print("STRICT: 存在待复核维度，未通过")
+        emit("STRICT: 存在待复核维度，未通过")
         return 2
     return 0
 
