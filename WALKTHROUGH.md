@@ -130,9 +130,9 @@ python tools/ci_check.py
 
 ### 4.2 14 维案例向量（`historical-review/行业案例档案库/`）
 
-- 每个案例「四、可对比特征向量」为 **14 维、单值**；
+- 每个案例「四、可对比特征向量」为 **14 维、单值**（维度 1 可记录阶段序列；维度 3 严格 CR3 口径，仅有 CR5/CR10 时写"CR3 未获取（CRn=…）"，子行业差异入备注）；
 - 双时点/子行业差异写入备注（`【阶段变体：…】`），单值维度只勾选一个（其余写"该维另标注"）；
-- 维护脚本：`tools/normalize_case_vectors.py --apply --single-select`（应保持 0 改动）；
+- 维护脚本：`tools/normalize_case_vectors.py --apply --single-select`（应保持 0 改动，含维 3 CR3 口径校验）；
 - 关系：`tools/check_case_relations.py --fix --write-graph`（当前 0 问题，关系图由脚本生成）。
 
 ### 4.3 技能关系（方案 A）

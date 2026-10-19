@@ -147,7 +147,7 @@ related_cases:
 - **然后与历史案例的特征向量对比**，找出最相似的
 - **相似度越高，历史案例的后续走势参考价值越大**
 
-> **标准化规则（2026-10 起）**：14 维均为**单值基准**（维度 1 可记录"主阶段（阶段序列见备注）"）；多时点/子行业差异写入备注（"【阶段变体：…】"），单值维度只勾选一个选项（其余写入"该维另标注"）。维护：`python tools/normalize_case_vectors.py --apply --single-select`（结构性调整）与 `python tools/check_case_relations.py`（关系一致性/关系图生成）。
+> **标准化规则（2026-10 起）**：14 维均为**单值基准**（维度 1 可记录"主阶段（阶段序列见备注）"；维度 3 严格 CR3 口径：仅有 CR5/CR10 时写"CR3 未获取（CRn=…）"，子行业差异入备注）；多时点/子行业差异写入备注（"【阶段变体：…】"），单值维度只勾选一个选项（其余写入"该维另标注"）。维护：`python tools/normalize_case_vectors.py --apply --single-select`（结构性调整）与 `python tools/check_case_relations.py`（关系一致性/关系图生成）。
 
 ### "跨类型类比"原则
 

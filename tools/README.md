@@ -65,9 +65,9 @@ python tools/tests/selftest.py
 
 | 脚本 | 作用 |
 |------|------|
-| `tools/normalize_case_vectors.py` | 14 维特征向量标准化：16 维→14 维（补充维度移出）、双列时点→单值基准+阶段变体、单值维度多选收敛；`--apply --single-select` 写入 |
+| `tools/normalize_case_vectors.py` | 14 维特征向量标准化：16 维→14 维（补充维度移出）、双列时点→单值基准+阶段变体、单值维度多选收敛；维 3 严格 CR3 格式校验；`--apply --single-select` 写入 |
 | `tools/check_case_relations.py` | 案例关系一致性检查/修复/关系图生成：引用缺失、单向关系、类型冲突；`--fix` 补全并统一，`--write-graph` 重新生成 `案例关联关系图.md`（Mermaid + 全部案例关联一览） |
-| `tools/case_match.py` | 用 14 维向量做“当前行业 ↔ 历史案例”匹配（HBS 半自动初筛）：`--query tools/examples/电力-14dim.json --top 5`；可加 `--json-out` 保存明细。示例向量：`tools/examples/白酒-14dim.json`、`tools/examples/电力-14dim.json`、`tools/examples/保险-14dim.json`（可比维度 <10 时应走判停分支） |
+| `tools/case_match.py` | 用 14 维向量做“当前行业 ↔ 历史案例”匹配（HBS 半自动初筛）：`--query tools/examples/电力-14dim.json --top 5`；可加 `--json-out` 保存明细。示例向量：`tools/examples/白酒-14dim.json`、`tools/examples/电力-14dim.json`、`tools/examples/保险-14dim.json`（维 3 严格 CR3，“未获取”不计分；可比维度 <10 时应走判停分支） |
 
 > 约定：案例 frontmatter 的 `name:` 即 slug；3 份对比示范为外部目标（不入案例关系图）。当前状态：22 个案例 14 维单值、关系检查 0 问题。示例查询向量与实测报告：`tools/examples/白酒-14dim.json`、`output/历史对照-白酒-20261019.md`。
 

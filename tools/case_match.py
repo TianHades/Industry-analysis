@@ -214,8 +214,11 @@ def compare(query: dict, case: dict) -> tuple[float, int, dict]:
         elif d == 2:
             s = sim_cycle(qv, cv)
         elif d == 3:
-            qn, cn = parse_num(qv, pct=True), parse_num(cv, pct=True)
-            s = sim_num(qn, cn, max(abs(qn or 0), 30))
+            if "未获取" in cv or "未获取" in qv:
+                s = None
+            else:
+                qn, cn = parse_num(qv, pct=True), parse_num(cv, pct=True)
+                s = sim_num(qn, cn, max(abs(qn or 0), 30))
         elif d == 4:
             qn, cn = parse_num(qv, pct=True), parse_num(cv, pct=True)
             if qn is not None and cn is not None and (qn >= 0) != (cn >= 0):

@@ -145,13 +145,30 @@ def normalize(path: Path, apply: bool, single_select: bool = False) -> dict:
 
 
 def check_single_select(path: Path) -> list[str]:
-    """检查 6/7/8/9/11/12/13/14 维是否存在 [x] 多选或未选。"""
+    """检查 6/7/8/9/11/12/13/14 维是否存在 [x] 多选或未选；检查维 3 是否为 CR3 严格口径。"""
     issues = []
     for i, line in enumerate(path.read_text(encoding="utf-8").split("\n"), 1):
         m = re.match(r"^\|\s*\*\*(\d+)\.", line)
-        if not m or int(m.group(1)) not in SINGLE_SELECT_DIMS:
+        if not m:
             continue
+        dim = int(m.group(1))
         cells = split_row(line)
+        if dim == 3:
+            if len(cells) < 2:
+                continue
+            value = cells[1]
+            if "未获取" in value:
+                continue
+            cm = re.match(
+                r"^CR3\s*(?:约|≈|~)?\s*(?:[<>])?\s*(\d+(?:\.\d+)?)\s*%"
+                r"(?:\s*[-–~]\s*(\d+(?:\.\d+)?)\s*%)?", value)
+            if not cm:
+                issues.append(f"  L{i} 第3维缺少合法 CR3 数值")
+            elif "%" in value[cm.end():]:
+                issues.append(f"  L{i} 第3维 CR3 数值不唯一（子行业差异应移至备注）")
+            continue
+        if dim not in SINGLE_SELECT_DIMS:
+            continue
         if len(cells) < 2:
             continue
         value = cells[1]
