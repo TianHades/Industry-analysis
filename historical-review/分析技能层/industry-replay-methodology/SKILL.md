@@ -1,6 +1,7 @@
 ---
 name: industry-replay-methodology
 description: |
+  【历史对照层】用于报告后的历史案例对照；当期行业分析请优先用本工程顶层技能 hypothesis-driven-research。
   用户在问"怎么系统研究一个新行业"、"我想自己做行业复盘但不知道从哪开始"、
   "如何判断我对一个行业的理解够不够深入"时激活。
   提供将申万宏源机构级研究方法论降维为个人可执行SOP的五步复盘流程，
