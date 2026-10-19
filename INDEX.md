@@ -152,7 +152,7 @@ graph LR
 
 ---
 
-## 关系明细
+## 关系明细（编排视角，18 条）
 
 | # | 源技能 | 关系类型 | 目标技能 | 说明 |
 |---|--------|----------|----------|------|
@@ -176,6 +176,49 @@ graph LR
 | 18 | hypothesis-driven-research | contrasts-with | spatial-temporal-benchmarking | 演绎验证 vs 类比推理 |
 
 ---
+
+## 关系元数据全量清单（自动生成）
+
+> 由 `tools/gen_skill_relations.py --write` 从 14 个技能 frontmatter 自动生成；与上表“关系明细（编排视角 18 条）”互补，不要手工编辑本段。
+
+**统计**：声明 52 条 → 去重 33 对；其中多类型对 9 个、双向声明对 17 个。
+
+| # | 技能 A | 关系（声明类型） | 技能 B | 声明方向 |
+|---|--------|------------------|--------|----------|
+| 1 | business-model-feasibility | depends-on + composes-with | industry-lifecycle-anchoring | business-model-feasibility --depends-on--> industry-lifecycle-anchoring；industry-lifecycle-anchoring --composes-with--> business-model-feasibility |
+| 2 | capacity-cycle-judgment | depends-on + composes-with | industry-lifecycle-anchoring | capacity-cycle-judgment --depends-on--> industry-lifecycle-anchoring；industry-lifecycle-anchoring --composes-with--> capacity-cycle-judgment |
+| 3 | competitive-landscape-analysis | depends-on + composes-with | industry-lifecycle-anchoring | competitive-landscape-analysis --depends-on--> industry-lifecycle-anchoring；industry-lifecycle-anchoring --composes-with--> competitive-landscape-analysis |
+| 4 | external-force-scanner | depends-on | industry-lifecycle-anchoring | external-force-scanner --depends-on--> industry-lifecycle-anchoring |
+| 5 | industry-analysis-orchestrator | depends-on + composes-with | hypothesis-driven-research | hypothesis-driven-research --composes-with--> industry-analysis-orchestrator；industry-analysis-orchestrator --depends-on--> hypothesis-driven-research |
+| 6 | identity-oriented-output | depends-on | hypothesis-driven-research | identity-oriented-output --depends-on--> hypothesis-driven-research |
+| 7 | industry-analysis-orchestrator | depends-on + composes-with | identity-oriented-output | identity-oriented-output --composes-with--> industry-analysis-orchestrator；industry-analysis-orchestrator --depends-on--> identity-oriented-output |
+| 8 | industry-analysis-orchestrator | depends-on | industry-lifecycle-anchoring | industry-analysis-orchestrator --depends-on--> industry-lifecycle-anchoring |
+| 9 | market-size-estimation | depends-on + composes-with | industry-lifecycle-anchoring | industry-lifecycle-anchoring --composes-with--> market-size-estimation；market-size-estimation --depends-on--> industry-lifecycle-anchoring |
+| 10 | moat-analysis | depends-on + composes-with | industry-lifecycle-anchoring | industry-lifecycle-anchoring --composes-with--> moat-analysis；moat-analysis --depends-on--> industry-lifecycle-anchoring |
+| 11 | lifecycle-valuation-map | depends-on + composes-with | industry-lifecycle-anchoring | industry-lifecycle-anchoring --composes-with--> lifecycle-valuation-map；lifecycle-valuation-map --depends-on--> industry-lifecycle-anchoring |
+| 12 | prosperity-tracking-system | depends-on | industry-lifecycle-anchoring | prosperity-tracking-system --depends-on--> industry-lifecycle-anchoring |
+| 13 | business-model-feasibility | composes-with | spatial-temporal-benchmarking | business-model-feasibility --composes-with--> spatial-temporal-benchmarking；spatial-temporal-benchmarking --composes-with--> business-model-feasibility |
+| 14 | business-model-feasibility | composes-with | industry-analysis-orchestrator | industry-analysis-orchestrator --composes-with--> business-model-feasibility |
+| 15 | capacity-cycle-judgment | composes-with | competitive-landscape-analysis | capacity-cycle-judgment --composes-with--> competitive-landscape-analysis；competitive-landscape-analysis --composes-with--> capacity-cycle-judgment |
+| 16 | capacity-cycle-judgment | composes-with | prosperity-tracking-system | capacity-cycle-judgment --composes-with--> prosperity-tracking-system；prosperity-tracking-system --composes-with--> capacity-cycle-judgment |
+| 17 | capacity-cycle-judgment | composes-with | industry-analysis-orchestrator | industry-analysis-orchestrator --composes-with--> capacity-cycle-judgment |
+| 18 | competitive-landscape-analysis | composes-with + contrasts-with | moat-analysis | competitive-landscape-analysis --contrasts-with--> moat-analysis；competitive-landscape-analysis --composes-with--> moat-analysis；moat-analysis --contrasts-with--> competitive-landscape-analysis；moat-analysis --composes-with--> competitive-landscape-analysis |
+| 19 | competitive-landscape-analysis | composes-with | industry-analysis-orchestrator | industry-analysis-orchestrator --composes-with--> competitive-landscape-analysis |
+| 20 | competitive-landscape-analysis | composes-with | industry-definition | industry-definition --composes-with--> competitive-landscape-analysis |
+| 21 | external-force-scanner | composes-with | spatial-temporal-benchmarking | external-force-scanner --composes-with--> spatial-temporal-benchmarking；spatial-temporal-benchmarking --composes-with--> external-force-scanner |
+| 22 | external-force-scanner | composes-with | industry-analysis-orchestrator | industry-analysis-orchestrator --composes-with--> external-force-scanner |
+| 23 | hypothesis-driven-research | composes-with | prosperity-tracking-system | hypothesis-driven-research --composes-with--> prosperity-tracking-system；prosperity-tracking-system --composes-with--> hypothesis-driven-research |
+| 24 | industry-analysis-orchestrator | composes-with | industry-definition | industry-analysis-orchestrator --composes-with--> industry-definition |
+| 25 | industry-analysis-orchestrator | composes-with | spatial-temporal-benchmarking | industry-analysis-orchestrator --composes-with--> spatial-temporal-benchmarking |
+| 26 | industry-analysis-orchestrator | composes-with | market-size-estimation | industry-analysis-orchestrator --composes-with--> market-size-estimation |
+| 27 | industry-analysis-orchestrator | composes-with | moat-analysis | industry-analysis-orchestrator --composes-with--> moat-analysis |
+| 28 | industry-analysis-orchestrator | composes-with | lifecycle-valuation-map | industry-analysis-orchestrator --composes-with--> lifecycle-valuation-map |
+| 29 | industry-analysis-orchestrator | composes-with | prosperity-tracking-system | industry-analysis-orchestrator --composes-with--> prosperity-tracking-system |
+| 30 | industry-definition | composes-with | industry-lifecycle-anchoring | industry-definition --composes-with--> industry-lifecycle-anchoring |
+| 31 | market-size-estimation | composes-with | spatial-temporal-benchmarking | market-size-estimation --composes-with--> spatial-temporal-benchmarking；spatial-temporal-benchmarking --composes-with--> market-size-estimation |
+| 32 | external-force-scanner | contrasts-with | prosperity-tracking-system | external-force-scanner --contrasts-with--> prosperity-tracking-system；prosperity-tracking-system --contrasts-with--> external-force-scanner |
+| 33 | hypothesis-driven-research | contrasts-with | spatial-temporal-benchmarking | hypothesis-driven-research --contrasts-with--> spatial-temporal-benchmarking；spatial-temporal-benchmarking --contrasts-with--> hypothesis-driven-research |
+
 
 ## 推荐学习顺序
 
@@ -212,6 +255,8 @@ graph LR
 | 第二份 v3 试点（保险） | 2026-10-19 | 保险行业（投资者版）通过 P0=0/P1=0 校验并发布；验证金融/非制造业与成长期分支；修复校验器多行业取数选择、取数日期一致性守卫 | ✅ 完成 |
 | 案例库 14 维标准化 + 关系重建 | 2026-10-19 | 22/22 案例统一 14 维单值（16 维→14、双列时点→基准+变体、多选收敛）；关系检查 0 问题、补全 17 条反向关系、统一 3 对冲突；关系图改为脚本生成 | ✅ 完成 |
 | 历史层引文边界 + 双层触发标签 | 2026-10-19 | 教育案例 2021-07 后引文改标“补注（非原书）”；8 个历史层技能 description 首段加【历史对照层】标签，降低与顶层技能触发混淆 | ✅ 完成 |
+| 关系元数据清单自动生成 | 2026-10-19 | 新增 `tools/gen_skill_relations.py`：从 14 个技能 frontmatter 生成去重关系清单（52 条声明 → 33 对，含 9 对多类型/17 对双向）；INDEX 增加自动生成段，编排视角 18 条保持不变 | ✅ 完成 |
+| P2 工程化收尾 | 2026-10-19 | 新增 `tools/ci_check.py` 一键回归（链接/技能结构/校验器自测/报告/案例）；扩展 targets（电力/银行）；清理 `_archive` 备份（约 52 MB，3 个目录） | ✅ 完成 |
 
 ### 关系统计
 
@@ -220,7 +265,8 @@ graph LR
 | depends-on | 9 | 核心锚被8个技能依赖 + identity依赖hypothesis |
 | composes-with | 6 | 工具技能被组合使用 |
 | contrasts-with | 3 | 代表不同分析路径 |
-| **合计** | **18** | |
+| **合计** | **18** | 编排视角核心关系（手工维护，用于调度/关系图） |
+| **元数据声明** | **52 条 / 去重 33 对** | 来自 14 个技能 frontmatter；其中 9 对为多类型声明、17 对为双向声明，详见“关系元数据全量清单（自动生成）” |
 
 ---
 

@@ -64,3 +64,25 @@ python tools/tests/selftest.py
 | `tools/check_case_relations.py` | 案例关系一致性检查/修复/关系图生成：引用缺失、单向关系、类型冲突；`--fix` 补全并统一，`--write-graph` 重新生成 `案例关联关系图.md`（Mermaid + 全部案例关联一览） |
 
 > 约定：案例 frontmatter 的 `name:` 即 slug；3 份对比示范为外部目标（不入案例关系图）。当前状态：22 个案例 14 维单值、关系检查 0 问题。
+
+## 8. 技能关系与一键回归
+
+| 脚本 | 作用 |
+|------|------|
+| `tools/gen_skill_relations.py` | 从 14 个技能 frontmatter 生成关系元数据清单（52 条声明 → 33 对，含多类型/双向）；`--write` 更新 INDEX 自动段 |
+| `tools/ci_check.py` | 一键回归：链接检查、22 技能结构、校验器自测、已发布报告校验、案例库一致性；提交前运行 |
+
+```bash
+python tools/ci_check.py     # 期望输出：结果：PASS
+```
+
+## 9. 取数标的模板（tools/targets/）
+
+| 文件 | 覆盖 |
+|------|------|
+| `白酒.json` | 贵州茅台/五粮液/泸州老窖/山西汾酒/洋河/古井 |
+| `保险.json` | 中国平安/中国人寿/中国太保/新华保险/中国人保 |
+| `电力.json` | 长江电力/国电南瑞/华能国际/中国核电/三峡能源/国投电力/华电国际 |
+| `银行.json` | 招商/工商/建设/农业/中国银行/宁波/兴业 |
+
+> 新增行业时复制一份 `targets/{行业}.json`；行业名需与报告 metadata `industry` 一致（校验器据此选择取数 JSON）。
