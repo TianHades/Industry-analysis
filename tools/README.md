@@ -59,6 +59,7 @@ python tools/tests/selftest.py
 | 白酒 | 成熟期 / 消费 | 首次端到端：取数 → 草稿 → 校验 → 发布 | 取数源以腾讯行情为主；TAM/SAM/SOM 口径按契约修正 |
 | 保险 | 成长期后段 / 金融 | 非制造业（模块 10“不适用+理由”）、成长期模块 14 可选、金融 PE/PB 口径、午间快照 | ① 校验器在多行业取数文件共存时会按文件名盲选（已改为按 industry + fetched_at 选择）；② 取数器可能把盘中价标成历史日期（已加 `--date` 一致性守卫）；③ 盘中快照表述（契约已补规则） |
 | 电力 | 成熟期 / 公用事业 | 重资产公用事业路径：装机/利用小时/容量电价、7 标的估值、盘中快照 | PE 中位数误报（“PE 中位数、7 家总市值”被解析为 7）——校验器已收紧为“中位数…倍”才参与复算 |
+| 银行 | 成熟期 / 金融 | PB-ROE + 高股息、7 标的（4 大行 + 2 股份 + 1 城商）、模块 10“不适用+理由”、CR3 估算 | 银行业无渗透率/实物产能，模块 3 改用总资产/GDP；CR3 仅能估算，已标 🔍 |
 
 > 后续行业验证时，优先检查：阶段分支（模块 10/14）、估值口径（非 PE 行业）、数据快照时点、跨行业数据文件选择。
 
@@ -69,9 +70,9 @@ python tools/tests/selftest.py
 | `tools/normalize_case_vectors.py` | 14 维特征向量标准化：16 维→14 维（补充维度移出）、双列时点→单值基准+阶段变体、单值维度多选收敛；维 3 严格 CR3 格式校验；`--apply --single-select` 写入 |
 | `tools/check_case_relations.py` | 案例关系一致性检查/修复/关系图生成：引用缺失、单向关系、类型冲突；`--fix` 补全并统一，`--write-graph` 重新生成 `案例关联关系图.md`（Mermaid + 全部案例关联一览） |
 | `tools/report_to_14dim.py` | 从 report-v3 报告自动抽取 14 维向量草稿：识别模块 3/6/7/9/10/11/12 的字段并标注 `review_required`；默认输出 `output/_data/`，人工复核后用 `--out` 写入 `tools/examples/`；可用 `--strict` / `--compare` / `--no-write` / `--selftest` |
-| `tools/case_match.py` | 用 14 维向量做“当前行业 ↔ 历史案例”匹配（HBS 半自动初筛）：`--query tools/examples/电力-14dim.json --top 5`；可加 `--json-out` 保存明细。示例向量：`tools/examples/白酒-14dim.json`、`tools/examples/电力-14dim.json`、`tools/examples/保险-14dim.json`（维 3 严格 CR3，“未获取”不计分；可比维度 <10 时应走判停分支） |
+| `tools/case_match.py` | 用 14 维向量做“当前行业 ↔ 历史案例”匹配（HBS 半自动初筛）：`--query tools/examples/电力-14dim.json --top 5`；可加 `--json-out` 保存明细。示例向量：`tools/examples/白酒-14dim.json`、`tools/examples/电力-14dim.json`、`tools/examples/保险-14dim.json`、`tools/examples/银行-14dim.json`（维 3 严格 CR3，“未获取”不计分；可比维度 <10 时应走判停分支） |
 
-> 约定：案例 frontmatter 的 `name:` 即 slug；3 份对比示范为外部目标（不入案例关系图）。当前状态：22 个案例 14 维单值、关系检查 0 问题。示例查询向量与实测报告：`tools/examples/白酒-14dim.json`、`output/历史对照-白酒-20261019.md`。
+> 约定：案例 frontmatter 的 `name:` 即 slug；3 份对比示范为外部目标（不入案例关系图）。当前状态：22 个案例 14 维单值、关系检查 0 问题。示例查询向量与实测报告：`tools/examples/白酒-14dim.json`、`output/历史对照-白酒-20261019.md`；银行：`tools/examples/银行-14dim.json`、`output/历史对照-银行-20261020.md`。
 
 ## 8. 技能关系与一键回归
 
